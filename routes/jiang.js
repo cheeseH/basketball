@@ -93,7 +93,7 @@ router.get('/live', function(req, res, next) {
 						var Sapi_Ticket = results.ticket;
 						console.log(Sapi_Ticket);
 						Time_Ticket = time;
-						var webUrl = "test.ima9ic.co"+req.url;
+						var webUrl = "http://test.ima9ic.co"+req.url;
 						var ret = sign(Sapi_Ticket,webUrl);
 						console.log(ret);
 						if(userId!=""){
@@ -117,7 +117,7 @@ router.get('/live', function(req, res, next) {
 					});
 				});	
 			}else{
-				var webUrl = "test.ima9ic.co"+req.url;
+				var webUrl = "http://test.ima9ic.co"+req.url;
 				var ret = sign(Sapi_Ticket,webUrl);
 				console.log(ret);
 				if(userId!=""){
@@ -314,54 +314,6 @@ router.get('/comment',function(req,res,next){
 	});
 });
 
-router.get('/share',function(req,res,next){
-	var time = (new Date()).valueOf();
-	var request = require('request');
-	if(time-Time_Ticket>7200*1000||Sapi_Ticket==""){
-		var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+"wx8fb97e6277001984"+"&secret="+"b08e0393a891b19fe8cabfd1a1ba3139";
-		console.log(url);
-		var options = {
-			method: "GET",
-			url : url
-		};
-		request(url,options,function(err,response,body){
-			if(err){
-				next(err);
-			}
-			// if(response.statusCode != 200){
-			// 	console.log(response.statusCode);
-			// 	res.render('error');
-			// }
-			var result = JSON.parse(body);
-			var token = result.access_token;
-			var httpsUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+token+"&type=jsapi";
-			var httpsOptions = {
-				method: "GET",
-				url : httpsUrl
-			};
-			request(httpsUrl,httpsOptions,function(err,response,body){
-				if(err){
-					next(err);
-				}
-				// if(response.statusCode != 200){
-				// 	console.log(response.statusCode);
-				// 	res.render('error');
-				// }
-				var results = JSON.parse(body);
-				var Sapi_Ticket = results.ticket;
-				console.log(Sapi_Ticket);
-				Time_Ticket = time;
-				var webUrl = "http://test.ima9ic.co/basketball.avosapps.com/share";
-				var ret = sign(Sapi_Ticket,webUrl);
-				res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
-			});
-		});	
-	}else{
-		var webUrl = "http://test.ima9ic.co/basketball.avosapps.com/share";
-		var ret = sign(Sapi_Ticket,webUrl);
-		res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
-	}
-});
 
 function format_date(date){
 	var date = new Date(date);

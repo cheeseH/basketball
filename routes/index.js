@@ -14,6 +14,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/authorize',function(req,res,next){
+        console.log('authorize');
         if(req.query.code){
                 var code = req.query.code;
                 var request = require('request');
@@ -70,12 +71,33 @@ router.get('/authorize',function(req,res,next){
                                             user.set('nickname',userinfo.nickname);
                                             user.signUp(null,{
                                                 success:function(user){
-                                                  console.log('authorize 1');
-                                                    var rawUrl = req.query.state;
-                                                    var url = rawUrl.replace("\"","");
-                                                    res.redirect(url);
+                                                  var urlParams = decodeURIComponent(req.query.state);
+                                                  urlParams = urlParams.replace(new RegExp("{","gm"),"");
+                                                  urlParams = urlParams.replace(new RegExp("}","gm"),"");
+
+                                                  urlParams = urlParams.replace(new RegExp("@","gm"),"?");
+                                                  urlParams = urlParams.replace(new RegExp("~","gm"),"=");
+                                                  urlParams = urlParams.replace(new RegExp(",","gm"),"&");
+                                                  var reUrl = "/"+urlParams;
+
+                                                  // var head = false;
+                                                  // for(var key in urlParams){
+                                                  //   if(key == 'url'){
+                                                  //     continue;
+                                                  //   }
+                                                  //   if( head == false){
+                                                  //     head = true;
+                                                  //     url = url+"?"+key+":"+urlParams[key];
+                                                  //   }
+                                                  //   else{
+                                                  //     url = url+"&"+key+":"+urlParams[key];
+                                                  //   }
+                                                  // }
+
+                                                    res.redirect(reUrl);
                                                 },
                                                 error:function(user,error){
+                                                  console.log("error1");
                                                     console.log(error);
                                                     //
                                                 }
@@ -83,13 +105,37 @@ router.get('/authorize',function(req,res,next){
                                         }
                                         //login
                                         else if(users.length == 1){
+                                          var wechatId = userinfo.unionid;
+                                          console.log(wechatId);
                                             AV.User.logIn(wechatId,wechatId,{
                                               success:function(user){
-                                                  var rawUrl = req.query.state;
-                                                  var url = rawUrl.replace("\"","");
-                                                  res.redirect(url);
+                                                  var urlParams = decodeURIComponent(req.query.state);
+                                                  urlParams = urlParams.replace(new RegExp("{","gm"),"");
+                                                  urlParams = urlParams.replace(new RegExp("}","gm"),"");
+
+                                                  urlParams = urlParams.replace(new RegExp("@","gm"),"?");
+                                                  urlParams = urlParams.replace(new RegExp("~","gm"),"=");
+                                                  urlParams = urlParams.replace(new RegExp(",","gm"),"&");
+                                                  var reUrl = "/"+urlParams;
+
+                                                  // var head = false;
+                                                  // for(var key in urlParams){
+                                                  //   if(key == 'url'){
+                                                  //     continue;
+                                                  //   }
+                                                  //   if( head == false){
+                                                  //     head = true;
+                                                  //     url = url+"?"+key+":"+urlParams[key];
+                                                  //   }
+                                                  //   else{
+                                                  //     url = url+"&"+key+":"+urlParams[key];
+                                                  //   }
+                                                  // }
+
+                                                    res.redirect(reUrl);
                                               },
                                               error:function(user,error){
+                                                console.log("error2");
                                                 console.log(error);
                                               }
                                             });
@@ -171,7 +217,26 @@ router.get('/followteam',function(req,res,next){
 })
 
 
+// router.get("/commentLikeCancel",function(req,res,next){
+//   var _commentId = req.query.commentId;
+//   var query = new AV.Query('commentLike');
+//   var Comment =  AV.Object.extend('Comment');
+//   var commentId = new Comment();
+//   commentId.id = _commentId;
+//   query.equalTo('commentId',commentId);
+//   query.euqalTo('userId',user);
+//   query.find({
+//     {
+//       success:function(likes){
+//         if(likes.length == 0){
+//           res.
+//         }
+//       },
+//       error:function(error){
 
-
+//       }
+//     }
+//   })
+//})
 
 module.exports = router;

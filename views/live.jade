@@ -94,6 +94,7 @@ html
 						weChatUrl = weChatUrl + "\"";
 					}
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					return false;
 				}
 				var content = $("input").val();
 				if($("input").attr("data-at")!=""){
@@ -129,17 +130,18 @@ html
 							$("#new").after(HTML);
 						},
 						error:function(error){
-							alert(error.error);
 						}
 					});
 				//清除内容
 				$("input").val("");
+				return true;
 			};
 
 			function commentLike(t,commentId){
 				if(userId==""){
 					var weChatUrl = "\"commentLike?commentId="+commentId+"\"";
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					return false;
 				}
 				var src = $(t).attr("src");
 				if(src==commentImg[0]){
@@ -165,12 +167,14 @@ html
 							
 						}
 					})
+				return true;
 			};
 
 			function teamLike(t,team){
 				if(userId==""){
 					var weChatUrl = "\"followteam?competitionId="+competitionId+"&team="+team;
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					return false;
 				}
 				var n_one = parseInt($(".enjoy_one span").text());
 				var n_two = parseInt($(".enjoy_two span").text());
@@ -217,7 +221,8 @@ html
 					success:function(data){
 
 					}
-				});	
+				});
+				return true;
 			};
 	body(onload="initialize()")
 		div.brand
@@ -238,12 +243,12 @@ html
 					-if(teamlike==1)
 						div.enjoy_one
 							a.enjoy_number(href="#")
-								img(src="images/icon-upvote-active@2x.png",onclick="teamLike(this,\""+1+"\")")
+								img(src="images/icon-upvote-active@2x.png",onclick="return teamLike(this,\""+1+"\")")
 							span #{likesA}
 					-else
 						div.enjoy_one
 							a.enjoy_number(href="#")
-								img(src="images/icon-upvote@2x.png",onclick="teamLike(this,\""+1+"\")")
+								img(src="images/icon-upvote@2x.png",onclick="return teamLike(this,\""+1+"\")")
 							span #{likesA}
 					div.award
 						p.award_number ￥ #{award}
@@ -252,12 +257,12 @@ html
 					-if(teamlike==2)
 						div.enjoy_two
 							a.enjoy_number(href="#")
-								img(src="images/icon-upvote-active@2x.png",onclick="teamLike(this,\""+2+"\")")
+								img(src="images/icon-upvote-active@2x.png",onclick="return teamLike(this,\""+2+"\")")
 							span #{likesB}
 					-else
 						div.enjoy_two
 							a.enjoy_number(href="#")
-								img(src="images/icon-upvote@2x.png",onclick="teamLike(this,\""+2+"\")")
+								img(src="images/icon-upvote@2x.png",onclick="return teamLike(this,\""+2+"\")")
 							span #{likesB}
 		div.navbar
 			div.btn.left
@@ -294,7 +299,7 @@ html
 							div.comment_like
 								span #{comment.get("likes")}
 								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
 					-else
 						div.comment
 							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
@@ -305,7 +310,7 @@ html
 							div.comment_like
 								span #{comment.get("likes")}
 								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
 				div.comment_type#new
 					div.line
 					div.hot
@@ -322,7 +327,7 @@ html
 							div.comment_like
 								span #{comment.get("likes")}
 								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
 					-else
 						div.comment
 							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
@@ -333,10 +338,10 @@ html
 							div.comment_like
 								span #{comment.get("likes")}
 								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
 			div.edit
 				input(type="text",data-at="")
-				a(onclick="send()",href="#") 发送
+				a(onclick="return send()",href="#") 发送
 	script(type="text/javascript").
 		var width=$(".brand").width()/2-$(".game_info").width()/2;
 		$(".game_info").offset({left:width});

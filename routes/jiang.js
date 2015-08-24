@@ -95,6 +95,7 @@ router.get('/live', function(req, res, next) {
 						Time_Ticket = time;
 						var webUrl = "http://test.ima9ic.co"+req.url;
 						var ret = sign(Sapi_Ticket,webUrl);
+						console.log(ret);
 						if(userId!=""){
 							var teamfollow = new AV.Query(TeamFollow);
 							teamfollow.equalTo("userId",userId);
@@ -118,6 +119,7 @@ router.get('/live', function(req, res, next) {
 			}else{
 				var webUrl = "http://test.ima9ic.co"+req.url;
 				var ret = sign(Sapi_Ticket,webUrl);
+				console.log(ret);
 				if(userId!=""){
 					var teamfollow = new AV.Query(TeamFollow);
 					teamfollow.equalTo("userId",userId);

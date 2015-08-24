@@ -21,6 +21,104 @@ html
 			var state = "{live@competitionId~"+competitionId+"}";
 			state = encodeURIComponent(state);
 			var authorizeUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect";
+
+			function getComment(){
+				var url = "/getComment?competitionId="+competitionId;
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						success:function(data){
+							var comment_number = data.comment_number;
+							var hotComments = data.hotComments;
+							var newComments = data.newComments;
+							var hotUsers = data.hotUsers;
+							var newUsers = data.newUsers;
+							var hasComment = false;
+							if(comment_number==0){
+
+							}else if(comment_number>=1000){
+								$(".content .container").append("<p class=comment_number> 吐槽数: "+comment_number/1000+"K</p>")
+								hasComment=true;
+							}else{
+								$(".content .container").append("<p class=comment_number> 吐槽数: "+comment_number+"</p>") 
+								hasComment=true;
+							}
+							if(hasComment){
+								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>热门吐槽</p></div><div class=line></div></div>")
+								for(var i = 0 ; i < hotComments.length ; i++){
+									var HTML = 	"<img class=user_img src="+hotUsers[i].avatorUrl+" alt='' onclick=commentAt(\""+hotUsers[i].objectId+"\",\""+hotUsers[i].nickname+"\")>"+
+													"<div class=comment_main>"+
+														"<p class=comment_user>"+hotUsers[i].nickname+"</p>"+
+														"<p class=comment_time>"+hotComments[i].createdAt+"</p>"+
+														"<p class=comment_content>"+hotComments[i].content+"</p>"+
+													"</div>"+
+													"<div class=comment_like>"+
+														"<span>"+hotComments[i].likes+"</span>"+
+														"<a href='#'>"+
+															"<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+hotComments[i].objectId+"\")'"+
+														"</a>"+
+													"</div>"+
+												"</div>";
+													
+									if(i==0){
+										HTML = "<div class=comment style=border:none;>"+HTML;
+									}else{
+										HTML = "<div class=comment>"+HTML;
+									}
+									$(".content .container").append(HTML);
+								}
+								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>")
+								for(var i = 0 ; i < newComments.length ; i++){
+									var HTML = "<img class=user_img src="+newUsers[i].avatorUrl+" alt='' onclick=commentAt(\""+newUsers[i].objectId+"\",\""+newUsers[i].nickname+"\")>"+
+														"<div class=comment_main>"+
+															"<p class=comment_user>"+newUsers[i].nickname+"</p>"+
+															"<p class=comment_time>"+newComments[i].createdAt+"</p>"+
+															"<p class=comment_content>"+newComments[i].content+"</p>"+
+														"</div>"+
+														"<div class=comment_like>"+
+															"<span>"+newComments[i].likes+"</span>"+
+															"<a href='#'>"+
+																"<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].objectId+"\")'"+
+															"</a>"+
+														"</div>"+
+													"</div>";
+									if(i==0){
+										HTML = "<div class=comment style='border:none;'>"+HTML;
+									}else{
+										HTML = "<div class=comment>"+HTML;
+									}
+									$(".content .container").append(HTML);
+								}
+							}
+							$(".content .container").append("<div class=edit><input type=text data-at=''><a onclick='return send()' href='#'>发送</a></div>");
+						}
+					});
+			}
+
+			function getReport(){
+				var url = "/getReport?competitionId="+competitionId;
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						success:function(data){
+
+						}
+					})
+			}
+
+			function getStatics(){
+				var url = "/getStatics?competitionId="+competitionId;
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						success:function(data){
+
+						}
+					})
+			}
 			function refresh(){
 				var url = "/refresh?competitionId="+competitionId;
 				$.ajax({
@@ -32,6 +130,7 @@ html
 							$(".enjoy_one span").text(data.likesA);
 							$(".enjoy_two span").text(data.likesB);
 							$(".award_number").text("￥ "+data.award.toString());
+							$(".score").text(data.scoreA+" : "+data.scoreB);
 						},
 						timeout:function(){
 							return false;
@@ -45,43 +144,45 @@ html
 			function initialize(){
 				$(".left img").attr("src","images/icon-comments-active@2x.png");
 				$(".left span").css("color","#CB1A48");
+				getComment();
 			}
 
 			function choose(i){
-				if(navbar!=i){
-					$(".content").empty();
-					switch(i){
-						case 1:
-							$(".left img").attr("src","images/icon-comments-active@2x.png");
-							$(".left span").css("color","#CB1A48");
-							break;
-						case 2:
-							$(".center img").attr("src","images/icon-comments-active@2x.png");
-							$(".center span").css("color","#CB1A48");
-							break;
-						case 3:
-							$(".right img").attr("src","images/icon-comments-active@2x.png");
-							$(".right span").css("color","#CB1A48");
-							break;
-					}
-					switch(navbar){
-						case 1:
-							$(".left img").attr("src","images/icon-comments@2x.png");
-							$(".left span").css("color","#929292");
-							break;
-						case 2:
-							$(".center img").attr("src","images/icon-comments@2x.png");
-							$(".center span").css("color","#929292");
-							break;
-						case 3:
-							$(".right img").attr("src","images/icon-comments@2x.png");
-							$(".right span").css("color","#929292");
-							break;
-					}
-					navbar = i;
-					return true;
+				$(".content .container").empty();
+				switch(navbar){
+					case 1:
+						$(".left img").attr("src","images/icon-comments@2x.png");
+						$(".left span").css("color","#929292");
+						break;
+					case 2:
+						$(".center img").attr("src","images/icon-comments@2x.png");
+						$(".center span").css("color","#929292");
+						break;
+					case 3:
+						$(".right img").attr("src","images/icon-comments@2x.png");
+						$(".right span").css("color","#929292");
+						break;
 				}
-				return false;
+				switch(i){
+					case 1:
+						$(".left img").attr("src","images/icon-comments-active@2x.png");
+						$(".left span").css("color","#CB1A48");
+						getComment();
+						break;
+					case 2:
+						$(".center img").attr("src","images/icon-comments-active@2x.png");
+						$(".center span").css("color","#CB1A48");
+						getReport();
+						break;
+					case 3:
+						$(".right img").attr("src","images/icon-comments-active@2x.png");
+						$(".right span").css("color","#CB1A48");
+						getStatics();
+						break;
+				}
+				
+				navbar = i;
+				return true;
 			};
 
 			function commentAt(userId,nickname){
@@ -278,69 +379,6 @@ html
 					span 统计
 		div.content
 			div.container
-				-if(comment_number>1000)
-					p.comment_number 吐槽数: #{comment_number/1000}K
-				-else
-					p.comment_number 吐槽数: #{comment_number}
-				div.comment_type#hot
-					div.line
-					div.hot
-						p 热门吐槽
-					div.line
-				-for comment,i in hotComments
-					-if(i==0)
-						div.comment(style="border:none;")
-							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
-							div.comment_main
-								p.comment_user #{comment.get("userId").get("nickname")}
-								p.comment_time #{comment.createdAt}
-								p.comment_content #{comment.get("content")}
-							div.comment_like
-								span #{comment.get("likes")}
-								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
-					-else
-						div.comment
-							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
-							div.comment_main
-								p.comment_user #{comment.get("userId").get("nickname")}
-								p.comment_time #{comment.createdAt}
-								p.comment_content #{comment.get("content")}
-							div.comment_like
-								span #{comment.get("likes")}
-								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
-				div.comment_type#new
-					div.line
-					div.hot
-						p 最新吐槽
-					div.line
-				-for comment,i in newComments
-					-if(i==0)
-						div.comment(style="border:none;")
-							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
-							div.comment_main
-								p.comment_user #{comment.get("userId").get("nickname")}
-								p.comment_time #{comment.createdAt}
-								p.comment_content #{comment.get("content")}
-							div.comment_like
-								span #{comment.get("likes")}
-								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
-					-else
-						div.comment
-							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
-							div.comment_main
-								p.comment_user #{comment.get("userId").get("nickname")}
-								p.comment_time #{comment.createdAt}
-								p.comment_content #{comment.get("content")}
-							div.comment_like
-								span #{comment.get("likes")}
-								a(href="#")
-									img(src="images/icon-like@2x.png", alt="",onclick="return commentLike(this,\""+comment.id+"\")")
-			div.edit
-				input(type="text",data-at="")
-				a(onclick="return send()",href="#") 发送
 	script(type="text/javascript").
 		var width=$(".brand").width()/2-$(".game_info").width()/2;
 		$(".game_info").offset({left:width});

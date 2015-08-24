@@ -23,7 +23,7 @@ router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
 	competitionObj.id = competitionId;
-	var time = (new Date()).getTime();
+	var time = (new Date()).valueOf();
 	var request = require('request');
 	var link = "/live?competitionId="+competitionId;
 
@@ -68,10 +68,8 @@ router.get('/live', function(req, res, next) {
 			var conversationId = competition[0].get("conversationId") ? competition[0].get("conversationId") : "";
 			var teamlike = 0;
 			
-			var webUrl = "http://test.ima9ic.co"+req.url;
 			if(time-Time_Ticket>7200*1000||Sapi_Ticket==""){
-
-				var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx8fb97e6277001984&secret=b08e0393a891b19fe8cabfd1a1ba3139";
+				var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+"wx8fb97e6277001984"+"&secret="+"b08e0393a891b19fe8cabfd1a1ba3139";
 				var options = {
 					method: "GET",
 					url : url
@@ -93,7 +91,9 @@ router.get('/live', function(req, res, next) {
 						}
 						var results = JSON.parse(body);
 						var Sapi_Ticket = results.ticket;
+						console.log(Sapi_Ticket);
 						Time_Ticket = time;
+						var webUrl = "http://test.ima9ic.co"+req.url;
 						var ret = sign(Sapi_Ticket,webUrl);
 						if(userId!=""){
 							var teamfollow = new AV.Query(TeamFollow);
@@ -116,7 +116,7 @@ router.get('/live', function(req, res, next) {
 					});
 				});	
 			}else{
-
+				var webUrl = "http://test.ima9ic.co"+req.url;
 				var ret = sign(Sapi_Ticket,webUrl);
 				if(userId!=""){
 					var teamfollow = new AV.Query(TeamFollow);
@@ -136,7 +136,6 @@ router.get('/live', function(req, res, next) {
 				}else{
 					res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 				}
-				res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 			}
 		},
 		error:function(object,error){

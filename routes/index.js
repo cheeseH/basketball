@@ -144,42 +144,32 @@ router.get('/livert',function(req,res,next){
 
 
 router.get('/followteam',function(req,res,next){
-  console.log('aaaa');
-  console.log(req.query);
+      console.log('aaaa');
+      console.log(req.query);
+      var competitionId = req.query.competitionId;
+      var team = new Number(req.query.team);
+      var user = req.AV.user;
+      var options = {
+          competitionId:competitionId,
+          team:Number(team)
+      };
+      AV.Cloud.run('teamfollow',options,{
+          success:function(result){
+            console.log('success');
 
-  AV.User.logIn('o6YjBt_pQnVSH24x1I58RJ0GHl1o','o6YjBt_pQnVSH24x1I58RJ0GHl1o',{
-    success:function(user){
-        var competitionId = req.query.competitionId;
-        var team = new Number(req.query.team);
-        var options = {
-            competitionId:competitionId,
-            team:Number(team)
-        };
-        AV.Cloud.run('teamfollow',options,{
-            success:function(result){
-              console.log('success');
+            res.json(result);
+            res.end();
+          },
+          error:function(error){
+            console.log('failed');
 
-              res.json(result);
-              res.end();
-            },
-            error:function(error){
-              console.log('failed');
-
-              res.json(error);
-              res.end();
-            }
-          })
-    },
-    error:function(user,error){
-      console.log('error');
-
-      res.json(error);
-      res.end();
-    }
-  })
-
-
+            res.json(error);
+            res.end();
+          }
+        })
+  
 })
+
 
 
 

@@ -351,15 +351,13 @@ router.get('/share',function(req,res,next){
 				var Sapi_Ticket = results.ticket;
 				console.log(Sapi_Ticket);
 				Time_Ticket = time;
-				var webUrl = "http://test.ima9ic.co"+req.url;
-				webUrl = encodeURIComponent(webUrl);
+				var webUrl = "http://test.ima9ic.co/share";
 				var ret = sign(Sapi_Ticket,webUrl);
 				res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 			});
 		});	
 	}else{
-		var webUrl = "http://test.ima9ic.co"+req.url;
-		webUrl = encodeURIComponent(webUrl);
+		var webUrl = "http://test.ima9ic.co/share";
 		var ret = sign(Sapi_Ticket,webUrl);
 		res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 	}

@@ -2,48 +2,179 @@
 var AV = require('leanengine');
 
 
-AV.Cloud.afterSave('TeamFollow',function(req,res){
-	var query = new AV.Query('Competition');
-	var competetionId = req.object.get('competitionId');
-	query.get(competetionId,{
-		success : function(competetion){
-			var award = competetion.get('award');
-			var awardLimit = competetion.get('awardLimit');	
-			//error happened ,fix it
-			if(award > awardLimit){
-				competetion.set('award',awardLimit);
-				competetion.save();
-				return;
-			}
-			else if( awardLimit == 0 ){
-				return;
-			}
-			else{
-				if(award+1 >= awardLimit){
-					competetion.set('award',awardLimit);
-					competetion.save();
-					return;
-				}
-				else{
-					competetion.increment('award',1);
-					competetion.save();
-					return;
-				}
-			}
-		},
-		error : function(error){
-			console.log(error);
-		}
-	})
+AV.Cloud.define('hello',function(req,res){
+ 	 console.log(req)
+  	res.success('Hello world!');
+
 });
 
-AV.Cloud.afterSave('CompetitionShare',function(req,res){
+AV.Cloud.define('teamfollow',function(req,res){
+	console.log(req);
+	var user = req.user;
+	if(typeof(user) == 'undefined'){
+		res.error();
+	}
+	var followObj = req.params;
+	var competitionId = followObj.competitionId;
+	console.log(competitionId);
+	var competitionQuery = new AV.Query('Competition');
+	competitionQuery.get(competitionId,{
+		success:function(competition){
+			var team = followObj.team;
+			var query = new AV.Query('TeamFollow');
+			var Competition = AV.Object.extend('Competition');
+			query.equalTo('competitionId',competition);
+			query.equalTo('userId',user);
+			query.find({
+				success:function(follows){
+					//not such a record exist
+					if(follows.length == 0){
+						var TeamFollow = AV.Object.extend('TeamFollow');
+						var follow = new TeamFollow();
+						console.log(competition);
+						follow.set('userId',user);
+						follow.set('competitionId',competition);
+						follow.set('team',team);
+						follow.save(null,{
+							success:function(follow){
+								var award = competition.get('award');
+								switch(team){
+									case 0:
+										break;
+									case 1:
+										competition.increment('likesA',1);
+										break;
+									case 2:
+										competition.increment('likesB',1);
+										break;
+									default:
+										res.error();
+										
+								}
+								console.log(award);
+								var awardLimit = competition.get('awardLimit');	
+								
+								//error happened ,fix it
+								if(award > awardLimit){
+									competition.set('award',awardLimit);
+									competition.save();
+									res.success(follow);
+								}
+								else if( awardLimit == 0 ){
+									competition.save();
+									res.success();
+								}
+								else{
+									if(award+1 >= awardLimit){
+										competition.set('award',awardLimit);
+										competition.save();
+										res.success(follow);
+									}
+									else{
+										console.log("here");
+										competition.increment('award',1);
+										competition.save();
+										res.success(follow);
+									}
+								}
+							
+							},
+							error:function(follow,error){
+								console.log(error);
+								res.error();
+							}
+						});
+					} 
+					else if(follows.length>0){
+						console.log('here1');
+						var follow = follows[0];
+						var oldTeam = follow.get("team");
+						follow.fetchWhenSave(true);
+						follow.set('team',team);
+						follow.save().then(function(follow){
+							var addA = 0;
+							var addB = 0;
+							switch(team){
+								case 0:
+									console.log('here3');
+									break;
+								case 1:
+									addA++;
+									competition.increment('likesA',1);
+									break;
+								case 2:
+									addB++;
+									competition.increment('likesB',1);
+									break;
+								default:
+									res.error();
+									
+							}
+							switch(oldTeam){
+							case 0:
+								break;
+							case 1:
+								var likesA = competition.get('likesA');
+								console.log(likesA);
+								if(likesA<0 && ((likesA+addA-1)<0)){
+									competition.set('likesA',0);
+									break;
+								}
+								competition.increment('likesA',-1);
+								break;
+							case 2:
+								var likesB = competition.get('likesB');
+								console.log(likesB);
+								if(likesB<0 && ((likesB+addB-1)<0)){
+									competition.set('likesA',0);
+									break;
+								}
+								console.log('here2');
+								competition.increment('likesB',-1);
+								break;
+							default:
+								res.error();
+									
+							}
+				
+							competition.save();
+							res.success(follow);
+						},function(follow,error){
+							res.error();
+						})
+						
+					}
+				},
+				error:function(error){
+					console.log(error);
+					res.error();
+				}
+			})
+
+		},
+		error:function(error){
+			console.log(error);
+			res.error();
+		}
+	})
+	
+
+})
+
+
+
+AV.Cloud.afterSave('FollowShare',function(req){
+	console.log(req);
 	var query = new AV.Query('Competition');
-	var competetionId = req.object.get('competitionId');
-	query.get(competetionId,{
+	var competetionIdObj = req.object.get('competitionId');
+	var competitionId = competetionIdObj.id;
+	query.get(competitionId,{
 		success : function(competetion){
 			var award = competetion.get('award');
+		
+			console.log(award);
 			var awardLimit = competetion.get('awardLimit');	
+			
 			//error happened ,fix it
 			if(award > awardLimit){
 				competetion.set('award',awardLimit);
@@ -60,6 +191,7 @@ AV.Cloud.afterSave('CompetitionShare',function(req,res){
 					return;
 				}
 				else{
+					console.log("here");
 					competetion.increment('award',0.5);
 					competetion.save();
 					return;
@@ -71,5 +203,70 @@ AV.Cloud.afterSave('CompetitionShare',function(req,res){
 		}
 	})
 });
+
+AV.Cloud.afterSave('Competition',function(req){
+	var comObj = req.object;
+	console.log(req.object);
+	var gameIdObj = comObj.get("gameId");
+	console.log(gameIdObj);
+	var gameId = gameIdObj.id;
+	console.log(gameId);
+	var query = new AV.Query('Game');
+	query.get(gameId,{
+		success:function(game){
+			var type = comObj.get('type');
+			game.set('type',type);
+			game.save();
+			return;
+		},
+		error:function(error){
+			console.log(error);
+			return;
+		}
+	})
+
+})
+
+AV.Cloud.afterSave('CommentLike',function(request){
+	var commentId = request.object.get('commentId').id;
+	var query = new AV.Query('Comment');
+	query.get(commentId,{
+		success:function(comment){
+			comment.increment('likes',1);
+			comment.save();
+		},
+		error:function(error){
+			console.error(error);
+			return;
+		}
+	})
+
+})
+
+AV.Cloud.afterDelete('CommentLike',function(request){
+	var commentId = request.object.get('commentId').id;
+	var query = new AV.Query('Comment');
+	query.get(commentId,{
+		success:function(comment){
+			var likes = comment.get('likes');
+			if(likes<0 || likes==0){
+				comment.set('likes',0);
+			}
+			else{
+				comment.increment('likes',-1);
+			}
+			comment.save();
+		},
+		error:function(error){
+			console.error(error);
+			return;
+		}
+	})
+
+})
+
+
+
+
 
 module.exports = AV.Cloud;

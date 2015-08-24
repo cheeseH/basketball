@@ -1,0 +1,54 @@
+doctype html
+html(lang="zh-cn")
+	head
+		title=计数器
+		meta(charset="UTF-8")
+		link(rel="stylesheet",href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css")
+		script(src="/javascripts/jquery.min.js")
+		script(type="text/javascript").
+			var conversationId = "#{conversationId}";
+			var scoreId = "#{scoreId}";
+			function add(score,team){
+				var newScore;
+				if(team=="1"){
+					newScore = parseInt($("#scoreA").text())+parseInt(score);
+					$("#scoreA").text(newScore);
+				}else{
+					newScore = parseInt($("#scoreB").text())+parseInt(score);
+					$("#scoreB").text(newScore);
+				}
+				var time = (new Date()).getTime();
+				var url = "/livert?conversationId="+conversationId+"&scoreA="+$("#scoreA").text()+"&scoreB="+$("#scoreB").text()+"&scoreId="+scoreId+"&time="+time;
+				$.ajax({
+					url:url,
+					type:"GET",
+					dataType:"json",
+					error:function(data){	
+					}
+				});
+			}
+	body
+		div.container(align="center")
+			table.table.table-hover.table-bordered.table-responsive
+				thead
+					tr
+						th
+							button#scoreA.btn.btn-danger  #{scoreA}
+						th
+							button#scoreB.btn.btn-danger #{scoreB}
+				tbody
+					tr
+						th
+							button#oneA.btn.btn-info(onclick="add(1,1)") +1
+						th
+							button#oneB.btn.btn-info(onclick="add(1,2)") +1
+					tr
+						th
+							button#twoA.btn.btn-info(onclick="add(2,1)") +2
+						th
+							button#twoB.btn.btn-info(onclick="add(2,2)") +2
+					tr
+						th
+							button#threeA.btn.btn-info(onclick="add(3,1)") +3
+						th
+							button#threeB.btn.btn-info(onclick="add(3,2)") +3

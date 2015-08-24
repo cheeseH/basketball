@@ -4,12 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
+var jiang = require('./routes/jiang');
 var cloud = require('./cloud');
-
+var AV = require('leanengine');
 var app = express();
 
 // view engine setup
@@ -22,9 +21,11 @@ app.use(cloud);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
+app.use(AV.Cloud.CookieSession({ secret: 'basketball-cheeseH', maxAge: 3600000, fetchUser: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
+app.use('/',jiang);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

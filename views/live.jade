@@ -1,0 +1,346 @@
+doctype html
+html
+	head
+		title 直播厅
+		meta(charset="UTF-8")
+		meta(name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no")
+		link(rel="stylesheet",href="/stylesheets/live.css")
+		script(src="/javascripts/jquery.min.js")
+		script(type="text/javascript").
+			var conversationId = "#{conversationId}";
+			alert(conversationId);
+			var navbar = 1;
+			var userId = "#{userId}";
+			var competitionId = "#{competitionId}";
+			var teamImg = ["images/icon-upvote@2x.png","images/icon-upvote-active@2x.png"];
+			var commentImg = ["images/icon-like@2x.png","images/icon-like-active@2x.png"];
+			if(userId==""){
+				var url = "\"/followteam?competitionId="+competitionId+"&team=1\"";
+				$(".enjoy_one .enjoy_number").attr("href","https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+url+"#wechat_redirect");
+				url = "\"/followteam?competitionId="+competitionId+"&team=2\"";
+				$(".enjoy_two .enjoy_number").attr("href","https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+url+"#wechat_redirect");
+			}else{
+				$("a").attr("href","#")
+			}
+			
+			function refresh(){
+				var url = "/refresh?competitionId="+competitionId;
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						timeout:5*1000,
+						success:function(data){
+							$(".enjoy_one span").text(data.likesA);
+							$(".enjoy_two span").text(data.likesB);
+							$(".award_number").text("￥ "+data.award.toString());
+						},
+						timeout:function(){
+							return false;
+						},
+						error:function(error){
+
+						}
+					});
+			};
+
+			function initialize(){
+				$(".left img").attr("src","images/icon-comments-active@2x.png");
+				$(".left span").css("color","#CB1A48");
+			}
+
+			function choose(i){
+				if(navbar!=i){
+					$(".content").empty();
+					switch(i){
+						case 1:
+							$(".left img").attr("src","images/icon-comments-active@2x.png");
+							$(".left span").css("color","#CB1A48");
+							break;
+						case 2:
+							$(".center img").attr("src","images/icon-comments-active@2x.png");
+							$(".center span").css("color","#CB1A48");
+							break;
+						case 3:
+							$(".right img").attr("src","images/icon-comments-active@2x.png");
+							$(".right span").css("color","#CB1A48");
+							break;
+					}
+					switch(navbar){
+						case 1:
+							$(".left img").attr("src","images/icon-comments@2x.png");
+							$(".left span").css("color","#929292");
+							break;
+						case 2:
+							$(".center img").attr("src","images/icon-comments@2x.png");
+							$(".center span").css("color","#929292");
+							break;
+						case 3:
+							$(".right img").attr("src","images/icon-comments@2x.png");
+							$(".right span").css("color","#929292");
+							break;
+					}
+					navbar = i;
+					return true;
+				}
+				return false;
+			};
+
+			function commentAt(userId,nickname){
+				$("input").attr("data-at",userId);
+				$("input").val("@"+nickname+": ");
+				$("input").attr("data-name","@"+nickname+":");
+			};
+
+			function send(){
+				if(userId==""){
+					var url = "\"/comment?competitionId="+competitionId+"&content="+content;
+					var atUserId = $("input").attr("data-at");
+					if(atUserId != ""){
+						url = url + "&atUserId=" + atUserId+"\"";
+					}else{
+						url = url + "\"";
+					}
+					$(".enjoy_one .enjoy_number").attr("href","https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+url+"#wechat_redirect");
+				}
+				var content = $("input").val();
+				if($("input").attr("data-at")!=""){
+					var name = $("input").attr("data-name");
+					if(content.indexOf(name)<0){
+						$("input").attr("data-at","");
+					}
+				}
+				//发送内容
+				var url = "/comment?competitionId="+competitionId+"&content="+content;
+				var atUserId = $("input").attr("data-at");
+				if(atUserId != ""){
+					url = url + "&atUserId=" + atUserId;
+				}
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType: "json",
+						success:function(data){
+							$("#new").next().attr("style","");
+							var HTML = 
+							'<div class="comment" style="border:none;">'+
+								'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
+								'<div class="comment_main">'+
+									'<p class="comment_user">'+data.nickname+'</p>'+
+									'<p class="comment_time">'+data.createdAt+'</p>'+
+									'<p class="comment_content">'+data.content+'</p>'+
+								'</div>'+
+								'<div class="comment_like">'+
+									'<span>'+data.likes+'</span>'+
+									'<a href="#">'+
+										'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
+							$("#new").after(HTML);
+						},
+						error:function(error){
+							alert(error.error);
+						}
+					});
+				//清除内容
+				$("input").val("");
+			};
+
+			function commentLike(t,commentId){
+				var src = $(t).attr("src");
+				if(src==commentImg[0]){
+					$(t).attr("src",commentImg[1]);
+					var n = parseInt($(t).parent().prev().text())+1;
+					$(t).parent().prev().text(n);
+					$(t).parent().prev().css("color","#CB1A48");
+				}else{
+					$(t).attr("src",commentImg[0]);
+					var n = parseInt($(t).parent().prev().text())-1;
+					$(t).parent().prev().text(n);
+					$(t).parent().prev().css("color","#C9CFD8");
+				}
+				//发送到后台
+				var url = "";
+				$.ajax({
+						type:"GET",
+						url:url,
+						success:function(data){
+							
+						},
+						error:function(error){
+							
+						}
+					})
+			};
+
+			function teamLike(t,team){
+				var n_one = parseInt($(".enjoy_one span").text());
+				var n_two = parseInt($(".enjoy_two span").text());
+				if(team==1){
+					if($(t).attr("src")==teamImg[0]){
+						if($(".enjoy_two img").attr("src")==teamImg[1]){
+							$(".enjoy_two img").attr("src",teamImg[0]);
+							n_two -= 1;
+							$(".enjoy_two span").text(n_two);
+						}
+						$(t).attr("src",teamImg[1]);
+						n_one += 1;
+						$(".enjoy_one span").text(n_one);
+					}else{
+						//取消点赞
+						team=0;
+						$(t).attr("src",teamImg[0]);
+						n_one -= 1;
+						$(".enjoy_one span").text(n_one);
+					}
+				}else{
+					if($(t).attr("src")==teamImg[0]){
+						if($(".enjoy_one img").attr("src")==teamImg[1]){
+							$(".enjoy_one img").attr("src",teamImg[0]);
+							n_one -= 1;
+							$(".enjoy_one span").text(n_one);
+						}
+						$(t).attr("src",teamImg[1]);
+						n_two += 1;
+						$(".enjoy_two span").text(n_two);
+					}else{
+						//取消点赞
+						team=0;
+						$(t).attr("src",teamImg[0]);
+						n_two -= 1;
+						$(".enjoy_two span").text(n_two);
+					}
+				}
+				var url = "/followteam?competitionId="+competitionId+"&team="+team;
+				$.ajax({
+					type:"GET",
+					url:url,
+					dataType:"json",
+					success:function(data){
+
+					}
+				});	
+			};
+	body(onload="initialize()")
+		div.brand
+			div.container
+				div.header
+					div.team.one
+						div.team_img.imgA
+						p.name #{teamA}
+					div.game_info
+						p.type #{type}
+						p.score #{scoreA} : #{scoreB}
+						p.status #{status}
+					div.team.two
+						div.team_img.imgB
+						p.name #{teamB}
+				div.line
+				div.footer
+					-if(teamlike==1)
+						div.enjoy_one
+							a.enjoy_number(href="#")
+								img(src="images/icon-upvote-active@2x.png",onclick="teamLike(this,\""+1+"\")")
+							span #{likesA}
+					-else
+						div.enjoy_one
+							a.enjoy_number(href="#")
+								img(src="images/icon-upvote@2x.png",onclick="teamLike(this,\""+1+"\")")
+							span #{likesA}
+					div.award
+						p.award_number ￥ #{award}
+						a(href="#")
+							img(src="images/icon-question@2x.png")
+					-if(teamlike==2)
+						div.enjoy_two
+							a.enjoy_number(href="#")
+								img(src="images/icon-upvote-active@2x.png",onclick="teamLike(this,\""+2+"\")")
+							span #{likesB}
+					-else
+						div.enjoy_two
+							a.enjoy_number(href="#")
+								img(src="images/icon-upvote@2x.png",onclick="teamLike(this,\""+2+"\")")
+							span #{likesB}
+		div.navbar
+			div.btn.left
+				button(onclick="return choose(1)")
+					img(src="images/icon-comments@2x.png", alt="")
+					span 吐槽
+			div.btn.center
+				button(onclick="return choose(2)")
+					img(src="images/icon-report@2x.png", alt="")
+					span 战报
+			div.btn.right
+				button(onclick="return choose(3)")
+					img(src="images/icon-statics@2x.png", alt="")
+					span 统计
+		div.content
+			div.container
+				-if(comment_number>1000)
+					p.comment_number 吐槽数: #{comment_number/1000}K
+				-else
+					p.comment_number 吐槽数: #{comment_number}
+				div.comment_type#hot
+					div.line
+					div.hot
+						p 热门吐槽
+					div.line
+				-for comment,i in hotComments
+					-if(i==0)
+						div.comment(style="border:none;")
+							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
+							div.comment_main
+								p.comment_user #{comment.get("userId").get("nickname")}
+								p.comment_time #{comment.createdAt}
+								p.comment_content #{comment.get("content")}
+							div.comment_like
+								span #{comment.get("likes")}
+								a(href="#")
+									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+					-else
+						div.comment
+							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
+							div.comment_main
+								p.comment_user #{comment.get("userId").get("nickname")}
+								p.comment_time #{comment.createdAt}
+								p.comment_content #{comment.get("content")}
+							div.comment_like
+								span #{comment.get("likes")}
+								a(href="#")
+									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+				div.comment_type#new
+					div.line
+					div.hot
+						p 最新吐槽
+					div.line
+				-for comment,i in newComments
+					-if(i==0)
+						div.comment(style="border:none;")
+							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
+							div.comment_main
+								p.comment_user #{comment.get("userId").get("nickname")}
+								p.comment_time #{comment.createdAt}
+								p.comment_content #{comment.get("content")}
+							div.comment_like
+								span #{comment.get("likes")}
+								a(href="#")
+									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+					-else
+						div.comment
+							img.user_img(src=comment.get("userId").get("avatorUrl"), alt="",onclick="commentAt(\""+comment.get("userId").id+"\",\""+comment.get("userId").get("nickname")+"\")")
+							div.comment_main
+								p.comment_user #{comment.get("userId").get("nickname")}
+								p.comment_time #{comment.createdAt}
+								p.comment_content #{comment.get("content")}
+							div.comment_like
+								span #{comment.get("likes")}
+								a(href="#")
+									img(src="images/icon-like@2x.png", alt="",onclick="commentLike(this,\""+comment.id+"\")")
+			div.edit
+				input(type="text",data-at="")
+				a(onclick="send()",href="#") 发送
+	script(type="text/javascript").
+		var width=$(".brand").width()/2-$(".game_info").width()/2;
+		$(".game_info").offset({left:width});
+		$(".imgA").css("background-image","url('#{logoUrlA}')");
+		$(".imgB").css("background-image","url('#{logoUrlB}')");
+	script(src="/javascripts/AV.realtime.js")
+	script(src="/javascripts/realtime.js")

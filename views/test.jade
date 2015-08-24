@@ -1,0 +1,22 @@
+doctype html
+html(lang="zh-cn")
+	head
+		meta(charset="UTF-8")
+		script(src="https://cdn1.lncld.net/static/js/av-mini-0.5.7.js")
+		script(src="https://cdn1.lncld.net/static/js/av-core-mini-0.5.7.js")
+		script(type="text/javascript").
+			AV.initialize("n4ibkpr4z9d8tkdlg7k0j6xywwwb28k2jw8fzmj5vrxeve4c","ehsn3wgg56185yofd51sdh9ccifhb1cpa4m8s1stm4slrbef");
+			var user = AV.User.current();
+			alert(user);
+			function hello(){
+				AV.Cloud.run("hello",{},{
+						success:function(result){
+							alert(result);
+						},
+						error:function(error){
+							alert(error);
+						}
+					});
+			};
+	body
+		button(onclick="hello()")  go

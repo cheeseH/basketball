@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	console.log(competitionId);
-	var userId = req.AV.user;
+	var userId = AV.User.current();
 	//根据Id查找直播
 	var ComQuery = new AV.Query(Competition);
 	ComQuery.equalTo("objectId",competitionId);
@@ -60,7 +60,6 @@ router.get('/live', function(req, res, next) {
 				award = 0;
 			}
 			var conversationId = competition[0].get("conversationId") ? competition[0].get("conversationId") : "";
-			var userId = req.query.userId;
 			if(!userId){
 				userId = "";
 			}
@@ -131,6 +130,28 @@ router.get('/live', function(req, res, next) {
 		},
 		error:function(object,error){
 			res.render('error');
+		}
+	});
+});
+
+router.get('/commentLike',function(req,res,next){
+	var commentId = req.query.commentId;
+	var userId = AV.User.current();
+	var user = new User();
+	user.id = userId;
+	var commentLike = new CommentLike();
+	var comment = new Comment();
+	comment.id = commentId;
+	commentLike.set("commentId",comment);
+	commentLike.set("userId",user);
+	commentLike.save(null,{
+		success:function(commentlike){
+			res.json({msg:"success"});
+			res.end();
+		},
+		error:function(object,error){
+			res.json({msg:"error"});
+			res.end();
 		}
 	});
 });

@@ -86,14 +86,15 @@ html
 
 			function send(){
 				if(userId==""){
-					var weChatUrl = "\"/comment?competitionId="+competitionId+"&content="+content;
+					var weChatUrl = "/comment";
 					var atUserId = $("input").attr("data-at");
+					var json = "{url:"+weChatUrl+",competitionId:"+competitionId+",content:"+content;
 					if(atUserId != ""){
-						weChatUrl = weChatUrl + "&atUserId=" + atUserId+"\"";
+						json = json + ",atUserId=" + atUserId+"}";
 					}else{
-						weChatUrl = weChatUrl + "\"";
+						weChatUrl = weChatUrl + "}";
 					}
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}
 				var content = $("input").val();
@@ -139,8 +140,9 @@ html
 
 			function commentLike(t,commentId){
 				if(userId==""){
-					var weChatUrl = "\"commentLike?commentId="+commentId+"\"";
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					var weChatUrl = "/commentLike";
+					var json = "{url:"+weChatUrl+",commentId:"+commentId+"}"
+					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}
 				var src = $(t).attr("src");
@@ -172,8 +174,9 @@ html
 
 			function teamLike(t,team){
 				if(userId==""){
-					var weChatUrl = "\"followteam?competitionId="+competitionId+"&team="+team;
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+weChatUrl+"#wechat_redirect";
+					var weChatUrl = "/followteam"
+					var json = "{url:"+weChatUrl+",competitionId:"+competitionId+",team:"+team+"}"
+					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}
 				var n_one = parseInt($(".enjoy_one span").text());

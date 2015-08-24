@@ -206,10 +206,19 @@ body{
 .content{
 	width: 100%;
 	position: absolute;
-	top: 430px;
+	top: 412px;
 	bottom: 88px;
 	overflow: scroll;
 	overflow-x: hidden;
+}
+
+.content .empty{
+	width: 270px;
+	height: 250px;
+	margin-top: 16.5%;
+	float: right;
+	margin-right: 32%;
+
 }
 
 .content .comment_number{

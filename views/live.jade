@@ -44,7 +44,6 @@ html
 			var weChatUrl = "\"/live\"";
 			
 			var conversationId = "#{conversationId}";
-			alert(conversationId);
 			var navbar = 1;
 			var userId = "#{userId}";
 			var competitionId = "#{competitionId}";
@@ -69,8 +68,10 @@ html
 							var hotUsers = data.hotUsers;
 							var newUsers = data.newUsers;
 							var hasComment = false;
-							if(comment_number==0){
 
+							if(comment_number==0){
+								$(".content .container").attr("style","background-color:#F0F0F0;");
+								$(".content .container").append("<div class=empty style=background-image:url('images/empty-comment@2x.png')></div>")
 							}else if(comment_number>=1000){
 								$(".content .container").append("<p class=comment_number> 吐槽数: "+comment_number/1000+"K</p>")
 								hasComment=true;
@@ -189,11 +190,11 @@ html
 						$(".left span").css("color","#929292");
 						break;
 					case 2:
-						$(".center img").attr("src","images/icon-comments@2x.png");
+						$(".center img").attr("src","images/icon-report@2x.png");
 						$(".center span").css("color","#929292");
 						break;
 					case 3:
-						$(".right img").attr("src","images/icon-comments@2x.png");
+						$(".right img").attr("src","images/icon-statics@2x.png");
 						$(".right span").css("color","#929292");
 						break;
 				}
@@ -204,12 +205,12 @@ html
 						getComment();
 						break;
 					case 2:
-						$(".center img").attr("src","images/icon-comments-active@2x.png");
+						$(".center img").attr("src","images/icon-report-active@2x.png");
 						$(".center span").css("color","#CB1A48");
 						getReport();
 						break;
 					case 3:
-						$(".right img").attr("src","images/icon-comments-active@2x.png");
+						$(".right img").attr("src","images/icon-statics-active@2x.png");
 						$(".right span").css("color","#CB1A48");
 						getStatics();
 						break;

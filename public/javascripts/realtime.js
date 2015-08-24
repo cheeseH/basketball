@@ -23,7 +23,6 @@ var logFlag = false;
 var score = $(".game_info .score");
 
 
-alert('正在链接服务器，请等待。。。');
 if (!firstFlag) {
   rt.close();
 }
@@ -42,7 +41,6 @@ if (!firstFlag) {
   // 监听连接成功事件
   rt.on('open', function() {
     firstFlag = false;
-    alert('服务器连接成功！');
 
     // 获得已有房间的实例
     rt.room(roomId, function(object) {

@@ -1,7 +1,6 @@
 
 var AV = require('leanengine');
-
-
+var util = require('./control/cloudUtil');
 AV.Cloud.define('hello',function(req,res){
  	 console.log(req)
   	res.success('Hello world!');
@@ -263,6 +262,85 @@ AV.Cloud.afterDelete('CommentLike',function(request){
 		}
 	})
 
+})
+
+
+AV.Cloud.define('commentInit',function(req,res){
+	console.log(req);	
+	var _count = new Number(req.params.count);
+	var user = req.user;
+	var _competitionId = req.params.competitionId;
+	//find the hot first
+	var Competition = AV.Object.extend('Competition');
+	var competitionId = new Competition();
+	competitionId.id = _competitionId; 
+	var query = new AV.Query('Comment');
+	query.include("userId");
+	query.limit(_count);
+	query.descending("likes");
+	query.descending("createdAt");
+	query.equalTo("competitionId",competitionId);
+	var results = new Object();
+	results.recent = new Array(_count);
+	results.hot = new Array(_count);
+	query.find({
+		success:function(comments){
+			console.log('hahah');
+			util.forEachComments(user,0,comments,0,function(likes,error){
+				if(error){
+					console.log('he1');
+					console.log(error);
+					res.error();
+				}
+				else{
+					console.log('he2');
+					console.log(likes);
+					for(var i = 0;i<comments.length;i++){
+						var resultObj = {
+							comment:comments[i],
+							likes:likes[i]
+						}
+						results.recent[i] = resultObj;
+					}
+					var newQuery = new AV.Query('Comment');
+					query.include("userId")
+					query.limit(_count);
+					query.descending("createdAt");
+					query.equalTo("competitionId",competitionId);
+					query.find({
+						success:function(comments){
+							util.forEachComments(user,0,comments,0,function(likes,error){
+								if(error){
+									console.log(error);
+									res.error();
+								}
+								else{
+									for(var i = 0;i<comments.length;i++){
+										var resultObj = {
+											comment:comments[i],
+											likes:likes[i]
+										}
+										results.hot[i] = resultObj;
+									}
+									res.success(results);
+								}
+							})
+						},
+						error:function(error){
+							console.log(error);
+							res.error();
+						}
+					})
+
+
+				}
+			})
+		},
+		error:function(error){
+			console.log(error);
+			res.error();
+		}
+	})
 })
 
 

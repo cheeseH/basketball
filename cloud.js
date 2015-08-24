@@ -281,11 +281,10 @@ AV.Cloud.define('commentInit',function(req,res){
 	query.descending("createdAt");
 	query.equalTo("competitionId",competitionId);
 	var results = new Object();
-	results.recent = new Array(_count);
-	results.hot = new Array(_count);
 	query.find({
 		success:function(comments){
 			console.log('hahah');
+			results.recent = new Array(comments.length);
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
 					console.log('he1');
@@ -309,6 +308,7 @@ AV.Cloud.define('commentInit',function(req,res){
 					query.equalTo("competitionId",competitionId);
 					query.find({
 						success:function(comments){
+							results.hot = new Array(comments.length);
 							util.forEachComments(user,0,comments,0,function(likes,error){
 								if(error){
 									console.log(error);
@@ -335,6 +335,48 @@ AV.Cloud.define('commentInit',function(req,res){
 
 				}
 			})
+		},
+		error:function(error){
+			console.log(error);
+			res.error();
+		}
+	})
+})
+
+AV.Cloud.define('getOldComment',function(req,res){
+	var _maxTime = new Date(req.params.createdAt);
+	console.log(_maxTime);
+	var _count = new Number(req.params.count);
+	var user = req.user;
+	var _competitionId = req.params.competitionId;
+	var Competition = AV.Object.extend('Competition');
+	var competitionId = new Competition();
+	competitionId.id = _competitionId; 
+	var query = new AV.Query('Comment');
+	query.limit(_count);
+	query.descending("createdAt");
+	query.equalTo("competitionId",competitionId);
+	query.lessThan("createdAt",_maxTime);
+	query.find({
+		success:function(comments){
+			var results = new Array(comments.length);
+			util.forEachComments(user,0,comments,0,function(likes,error){
+				if(error){
+					console.log(error);
+					res.error();
+				}
+				else{
+					for(var i = 0;i<comments.length;i++){
+						var resultObj = {
+							comment:comments[i],
+							likes:likes[i]
+						}
+						results[i] = resultObj;
+					}
+					res.success(results);
+				}
+			})
+
 		},
 		error:function(error){
 			console.log(error);

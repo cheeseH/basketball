@@ -14,6 +14,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/authorize',function(req,res,next){
+        console.log('authorize');
         if(req.query.code){
                 var code = req.query.code;
                 var request = require('request');
@@ -72,6 +73,7 @@ router.get('/authorize',function(req,res,next){
                                                 success:function(user){
                                                   console.log('authorize 1');
                                                     var rawUrl = req.query.state;
+                                                    console.log(rawUrl);
                                                     var url = rawUrl.replace("\"","");
                                                     res.redirect(url);
                                                 },
@@ -169,9 +171,6 @@ router.get('/followteam',function(req,res,next){
         })
   
 })
-
-
-
 
 
 module.exports = router;

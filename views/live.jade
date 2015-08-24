@@ -6,6 +6,40 @@ html
 		meta(name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no")
 		link(rel="stylesheet",href="/stylesheets/live.css")
 		script(src="/javascripts/jquery.min.js")
+		script(src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js")
+		script(type="text/javascript").
+			wx.config({
+				debug:false,
+				appId:"wx8fb97e6277001984",
+				timestamp:#{timestamp},
+				nonceStr:"#{nonceStr}",
+				signature:"#{signature}",
+				jsApiList:[
+					'onMenuShareTimeline'
+				]
+			});
+			wx.ready(function(){
+				wx.checkJsApi({
+					jsApiList:[
+				 		'getNetworkType',
+				 		'previewImage'
+				 	]
+				 });
+				wx.onMenuShareTimeline({
+					title: "测试",
+					link: "http://movie.douban.com/subject/25785114/",
+					imgUrl: "https://upload.wikimedia.org/wikipedia/zh/thumb/5/53/Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg/400px-Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg.png",
+					success: function(res){
+						
+					},
+					fail:function(res){
+						alert(JSON.stringify(res));
+					}
+				});
+			});
+			wx.error(function(res){
+				alert(JSON.stringify(res));
+			});
 		script(type="text/javascript").
 			var weChatUrl = "\"/live\"";
 			

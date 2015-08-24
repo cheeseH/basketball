@@ -68,6 +68,7 @@ router.get('/live', function(req, res, next) {
 					var comment_number = result.count;
 					//找出最热门评论
 					var commentQuery = new AV.Query(Comment);
+					var teamlike = 0;
 					var competitionObj = new Competition();
 					competitionObj.id = competitionId;
 					commentQuery.include("userId");
@@ -99,7 +100,10 @@ router.get('/live', function(req, res, next) {
 										teamfollow.equalTo("competitionId",competitionObj);
 										teamfollow.find({
 											success:function(teamfollow){
-												var teamlike = teamfollow[0].get("team");
+												if(teamfollow.length>0){
+													teamlike = teamfollow[0].get("team");
+												}
+												
 												console.log(teamlike);
 												res.render('live',{hotComments:hotComments,newComments:newComments,comment_number:comment_number,logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId});												
 											},
@@ -136,9 +140,7 @@ router.get('/live', function(req, res, next) {
 
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
-	var userId = AV.User.current();
-	var user = new User();
-	user.id = userId;
+	var user = new req.AV.user;
 	var commentLike = new CommentLike();
 	var comment = new Comment();
 	comment.id = commentId;

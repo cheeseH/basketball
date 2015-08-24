@@ -16,7 +16,11 @@ html
 			var competitionId = "#{competitionId}";
 			var teamImg = ["images/icon-upvote@2x.png","images/icon-upvote-active@2x.png"];
 			var commentImg = ["images/icon-like@2x.png","images/icon-like-active@2x.png"];
-			var json = "{\"url\":"+weChatUrl+",\"competitionId\":\""+competitionId+"\"}";
+			var json = {"url":weChatUrl,"competitionId":competitionId};
+			json = JSON.stringify(json);
+			var state = "{live@competitionId~"+competitionId+"}";
+			state = encodeURIComponent(state);
+			var authorizeUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect";
 			function refresh(){
 				var url = "/refresh?competitionId="+competitionId;
 				$.ajax({
@@ -88,7 +92,7 @@ html
 
 			function send(){
 				if(userId==""){
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
+					window.location.href=authorizeUrl;
 					return false;
 				}
 				var content = $("input").val();
@@ -134,7 +138,7 @@ html
 
 			function commentLike(t,commentId){
 				if(userId==""){
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
+					window.location.href=authorizeUrl;
 					return false;
 				}
 				var src = $(t).attr("src");
@@ -168,7 +172,7 @@ html
 
 			function teamLike(t,team){
 				if(userId==""){
-					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
+					window.location.href=authorizeUrl;
 					return false;
 				}
 				var n_one = parseInt($(".enjoy_one span").text());

@@ -21,8 +21,13 @@ router.get('/', function(req, res, next) {
 
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
-	console.log(competitionId);
-	var userId = AV.User.current();
+	
+	var time = (new Date()).getTime();
+	var request = require('request');
+	var link = "/live?competitionId="+competitionId;
+
+	var user = AV.User.current();
+	var userId = user ? user.id : "";
 	//根据Id查找直播
 	var ComQuery = new AV.Query(Competition);
 	ComQuery.equalTo("objectId",competitionId);
@@ -60,78 +65,149 @@ router.get('/live', function(req, res, next) {
 				award = 0;
 			}
 			var conversationId = competition[0].get("conversationId") ? competition[0].get("conversationId") : "";
-			if(!userId){
-				userId = "";
-			}
-			AV.Query.doCloudQuery('select count(*) from Comment',{
-				success:function(result){
-					var comment_number = result.count;
-					//找出最热门评论
-					var commentQuery = new AV.Query(Comment);
-					var competitionObj = new Competition();
-					competitionObj.id = competitionId;
-					commentQuery.include("userId");
-					commentQuery.limit(5);
-					commentQuery.descending("likes");
-					commentQuery.descending("createdAt");
-					commentQuery.equalTo("competitionId",competitionObj);
-					commentQuery.find({
-						success:function(result){
-							for (var i = result.length - 1; i >= 0; i--) {
-								result[i].createdAt = format_date(result[i].createdAt);
-							};
-							var hotComments = result;
-							//找出最新评论
-							var commentQuery2 = new AV.Query(Comment);
-							commentQuery2.include("userId");
-							commentQuery2.limit(10);
-							commentQuery2.descending("createdAt");
-							commentQuery2.equalTo("competitionId",competitionObj);
-							commentQuery2.find({
-								success:function(result){
-									for (var i = result.length - 1; i >= 0; i--) {
-										result[i].createdAt = format_date(result[i].createdAt);
-									};
-									var newComments = result;
-									if(userId){
-										var teamfollow = new AV.Query(TeamFollow);
-										teamfollow.equalTo("userId",userId);
-										teamfollow.equalTo("competitionId",competitionObj);
-										teamfollow.find({
-											success:function(teamfollow){
-												var teamlike = teamfollow[0].get("team");
-												console.log(teamlike);
-												res.render('live',{hotComments:hotComments,newComments:newComments,comment_number:comment_number,logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId});												
-											},
-											error:function(object,error){
-												res.render('error');
-											}
-										});
-									}else{
-										res.render('live',{hotComments:hotComments,newComments:newComments,comment_number:comment_number,logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:0,conversationId:conversationId});	
+			var teamlike = 0;
+			
+			var webUrl = "http://test.ima9ic.co"+req.url;
+			if(time-Time_Ticket>7200*1000||Sapi_Ticket==""){
+
+				var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx8fb97e6277001984&secret=b08e0393a891b19fe8cabfd1a1ba3139";
+				var options = {
+					method: "GET",
+					url : url
+				};
+				request(url,options,function(err,response,body){
+					if(err){
+						next(err);
+					}
+					var result = JSON.parse(body);
+					var token = result.access_token;
+					var httpsUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+token+"&type=jsapi";
+					var httpsOptions = {
+						method: "GET",
+						url : httpsUrl
+					};
+					request(httpsUrl,httpsOptions,function(err,response,body){
+						if(err){
+							next(err);
+						}
+						var results = JSON.parse(body);
+						var Sapi_Ticket = results.ticket;
+						Time_Ticket = time;
+						var ret = sign(Sapi_Ticket,webUrl);
+						if(userId!=""){
+							var teamfollow = new AV.Query(TeamFollow);
+							teamfollow.equalTo("userId",userId);
+							teamfollow.equalTo("competitionId",competitionObj);
+							teamfollow.find({
+								success:function(teamfollow){
+									if(teamfollow.length>0){
+										teamlike = teamfollow[0].get("team");
 									}
-									
+									res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 								},
-								error:function(error){
+								error:function(object,error){
 									res.render('error');
 								}
 							});
+						}else{
+							res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
+						}
+					});
+				});	
+			}else{
+
+				var ret = sign(Sapi_Ticket,webUrl);
+				if(userId!=""){
+					var teamfollow = new AV.Query(TeamFollow);
+					teamfollow.equalTo("userId",userId);
+					teamfollow.equalTo("competitionId",competitionObj);
+					teamfollow.find({
+						success:function(teamfollow){
+							if(teamfollow.length>0){
+								teamlike = teamfollow[0].get("team");
+							}
+							res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 						},
-						error:function(error){
+						error:function(object,error){
 							res.render('error');
 						}
-					});		
-				},
-				error:function(error){
-					res.render('error');
+					});
+				}else{
+					res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 				}
-			});
-			
+				res.render('live',{logoUrlA:teamA.get("logoUrl"),teamA:teamA.get("name"),likesA:likesA,type:competition[0].get("type"),scoreA:scoreA,scoreB:scoreB,status:competition[0].get("status"),award:award,logoUrlB:teamB.get("logoUrl"),teamB:teamB.get("name"),likesB:likesB,userId:userId,competitionId:competitionId,teamlike:teamlike,conversationId:conversationId,timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
+			}
 		},
 		error:function(object,error){
 			res.render('error');
 		}
 	});
+});
+
+router.get('/getComment',function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var user = AV.User.current();
+	var userId = user ? user.id : "";
+	AV.Query.doCloudQuery('select count(*) from Comment',{
+		success:function(result){
+			var comment_number = result.count;
+			//找出最热门评论
+			var commentQuery = new AV.Query(Comment);
+			var competitionObj = new Competition();
+			competitionObj.id = competitionId;
+			commentQuery.include("userId");
+			commentQuery.limit(5);
+			commentQuery.descending("likes");
+			commentQuery.descending("createdAt");
+			commentQuery.equalTo("competitionId",competitionObj);
+			commentQuery.find({
+				success:function(result){
+					var hotUsers = new Array();
+					for (var i = result.length - 1; i >= 0; i--) {
+						result[i].createdAt = format_date(result[i].createdAt);
+						hotUsers[i] = result[i].get("userId");
+					};
+					var hotComments = result;
+					
+
+					//找出最新评论
+					var commentQuery2 = new AV.Query(Comment);
+					commentQuery2.include("userId");
+					commentQuery2.limit(5);
+					commentQuery2.descending("createdAt");
+					commentQuery2.equalTo("competitionId",competitionObj);
+					commentQuery2.find({
+						success:function(result){
+							var newUsers = new Array();
+							for (var i = result.length - 1; i >= 0; i--) {
+								result[i].createdAt = format_date(result[i].createdAt);
+								newUsers[i] = result[i].get("userId");
+							};
+							var newComments = result;
+							if(userId!=""){
+								res.json({hotComments:hotComments,newComments:newComments,comment_number:comment_number,hotUsers:hotUsers,newUsers:newUsers});												
+								res.end();
+							}else{
+								res.json({hotComments:hotComments,newComments:newComments,comment_number:comment_number,hotUsers:hotUsers,newUsers:newUsers});
+								res.end()
+							}
+							
+						},
+						error:function(error){
+							res.render('error');
+						}
+					});
+				},
+				error:function(error){
+					res.render('error');
+				}
+			});		
+		},
+		error:function(error){
+			res.render('error');
+		}
+	});
+
 });
 
 router.get('/commentLike',function(req,res,next){
@@ -171,55 +247,11 @@ router.get('/count',function(req,res,next){
 		}
 	});
 });
-router.get('/share',function(req,res,next){
-	var time = (new Date()).valueOf();
-	var request = require('request');
-	if(time-Time_Ticket>7200*1000||Sapi_Ticket==""){
-		var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+config.wxId+"&secret="+config.wxSecretId;
-		var options = {
-			method: "GET",
-			url : url
-		};
-		request(url,options,function(err,response,body){
-			if(err){
-				next(err);
-			}
-			// if(response.statusCode != 200){
-			// 	console.log(response.statusCode);
-			// 	res.render('error');
-			// }
-			var result = JSON.parse(body);
-			var token = result.access_token;
-			var httpsUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+token+"&type=jsapi";
-			var httpsOptions = {
-				method: "GET",
-				url : httpsUrl
-			};
-			request(httpsUrl,httpsOptions,function(err,response,body){
-				if(err){
-					next(err);
-				}
-				// if(response.statusCode != 200){
-				// 	console.log(response.statusCode);
-				// 	res.render('error');
-				// }
-				var results = JSON.parse(body);
-				var Sapi_Ticket = results.ticket;
-				Time_Ticket = time;
-				var webUrl = "http://test.ima9ic.co"+req.url;
-				var ret = sign(Sapi_Ticket,webUrl);
-				res.render('test',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
-			});
-		});	
-	}else{
-		var webUrl = "http://test.ima9ic.co"+req.url;
-		var ret = sign(Sapi_Ticket,webUrl);
-		res.render('test',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
-	}
-});
+
 router.get('/refresh',function(req,res,next){
 	var competitionId = req.query.competitionId;
 	var query = new AV.Query(Competition);
+	query.include("scoreId");
 	query.equalTo("objectId",competitionId);
 	query.find({
 		success:function(competition){
@@ -227,7 +259,9 @@ router.get('/refresh',function(req,res,next){
 			var likesA = competition.get("likesA") ? competition.get("likesA") : 0;
 			var likesB = competition.get("likesB") ? competition.get("likesB") : 0;
 			var award = competition.get("award") ? competition.get("award") : 0;
-			res.json({likesA:likesA,likesB:likesB,award:award});
+			var scoreA = competition.get("scoreId").get("scoreA");
+			var scoreB = competition.get("scoreId").get("scoreB");
+			res.json({likesA:likesA,likesB:likesB,award:award,scoreA:scoreA,scoreB:scoreB});
 			res.end();
 		},
 		error:function(object,error){

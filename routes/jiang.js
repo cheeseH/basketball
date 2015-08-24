@@ -93,7 +93,7 @@ router.get('/live', function(req, res, next) {
 						var Sapi_Ticket = results.ticket;
 						console.log(Sapi_Ticket);
 						Time_Ticket = time;
-						var webUrl = "http://test.ima9ic.co"+req.url;
+						var webUrl = "test.ima9ic.co"+req.url;
 						var ret = sign(Sapi_Ticket,webUrl);
 						console.log(ret);
 						if(userId!=""){
@@ -117,7 +117,7 @@ router.get('/live', function(req, res, next) {
 					});
 				});	
 			}else{
-				var webUrl = "http://test.ima9ic.co"+req.url;
+				var webUrl = "test.ima9ic.co"+req.url;
 				var ret = sign(Sapi_Ticket,webUrl);
 				console.log(ret);
 				if(userId!=""){

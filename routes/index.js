@@ -71,13 +71,26 @@ router.get('/authorize',function(req,res,next){
                                             user.set('nickname',userinfo.nickname);
                                             user.signUp(null,{
                                                 success:function(user){
-                                                  console.log('authorize 1');
-                                                    var rawUrl = req.query.state;
-                                                    console.log(rawUrl);
-                                                    var url = rawUrl.replace("\"","");
+                                                  var urlParams = req.query.state;
+                                                  urlParams = JSON.parse(urlParams);
+                                                  var url = urlParams.url;
+                                                  var head = false;
+                                                  for(var key in urlParams){
+                                                    if(key == 'url'){
+                                                      continue;
+                                                    }
+                                                    if( head == false){
+                                                      head = true;
+                                                      url = url+"?"+key+":"+urlParams[key];
+                                                    }
+                                                    else{
+                                                      url = url+"&"+key+":"+urlParams[key];
+                                                    }
+                                                  }
                                                     res.redirect(url);
                                                 },
                                                 error:function(user,error){
+                                                  console.log("error1");
                                                     console.log(error);
                                                     //
                                                 }
@@ -85,13 +98,32 @@ router.get('/authorize',function(req,res,next){
                                         }
                                         //login
                                         else if(users.length == 1){
+                                          var wechatId = userinfo.unionid;
+                                          console.log(wechatId);
                                             AV.User.logIn(wechatId,wechatId,{
                                               success:function(user){
-                                                  var rawUrl = req.query.state;
-                                                  var url = rawUrl.replace("\"","");
+                                                  var urlParams = req.query.state;
+                                                  console.log(urlParams);
+                                                  urlParams = JSON.parse(urlParams);
+                                                  var url = urlParams.url;
+                                                  var head = false;
+                                                  for(var key in urlParams){
+                                                    if(key == 'url'){
+                                                      continue;
+                                                    }
+                                                    if( head == false){
+                                                      head = true;
+                                                      url = url+"?"+key+":"+urlParams[key];
+                                                    }
+                                                    else{
+                                                      url = url+"&"+key+":"+urlParams[key];
+                                                    }
+                                                  }
+
                                                   res.redirect(url);
                                               },
                                               error:function(user,error){
+                                                console.log("error2");
                                                 console.log(error);
                                               }
                                             });

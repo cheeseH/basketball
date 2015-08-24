@@ -6,41 +6,9 @@ html
 		meta(name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no")
 		link(rel="stylesheet",href="/stylesheets/live.css")
 		script(src="/javascripts/jquery.min.js")
-		script(src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js")
 		script(type="text/javascript").
-			wx.config({
-				debug:false,
-				appId:"wx8fb97e6277001984",
-				timestamp:#{timestamp},
-				nonceStr:"#{nonceStr}",
-				signature:"#{signature}",
-				jsApiList:[
-					'onMenuShareTimeline'
-				]
-			});
-			wx.ready(function(){
-				wx.checkJsApi({
-					jsApiList:[
-				 		'getNetworkType',
-				 		'previewImage'
-				 	]
-				 });
-				wx.onMenuShareTimeline({
-					title: "测试",
-					link: "http://movie.douban.com/subject/25785114/",
-					imgUrl: "https://upload.wikimedia.org/wikipedia/zh/thumb/5/53/Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg/400px-Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg.png",
-					success: function(res){
-						
-					},
-					fail:function(res){
-						alert(JSON.stringify(res));
-					}
-				});
-			});
-			wx.error(function(res){
-				alert(JSON.stringify(res));
-			});
-		script(type="text/javascript").
+			var weChatUrl = "\"/live\"";
+			
 			var conversationId = "#{conversationId}";
 			alert(conversationId);
 			var navbar = 1;
@@ -48,7 +16,7 @@ html
 			var competitionId = "#{competitionId}";
 			var teamImg = ["images/icon-upvote@2x.png","images/icon-upvote-active@2x.png"];
 			var commentImg = ["images/icon-like@2x.png","images/icon-like-active@2x.png"];
-			
+			var json = "{\"url\":"+weChatUrl+",\"competitionId\":\""+competitionId+"\"}";
 			function refresh(){
 				var url = "/refresh?competitionId="+competitionId;
 				$.ajax({
@@ -120,14 +88,6 @@ html
 
 			function send(){
 				if(userId==""){
-					var weChatUrl = "/comment";
-					var atUserId = $("input").attr("data-at");
-					var json = "{url:"+weChatUrl+",competitionId:"+competitionId+",content:"+content;
-					if(atUserId != ""){
-						json = json + ",atUserId=" + atUserId+"}";
-					}else{
-						weChatUrl = weChatUrl + "}";
-					}
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}
@@ -174,8 +134,6 @@ html
 
 			function commentLike(t,commentId){
 				if(userId==""){
-					var weChatUrl = "/commentLike";
-					var json = "{url:"+weChatUrl+",commentId:"+commentId+"}"
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}
@@ -210,8 +168,6 @@ html
 
 			function teamLike(t,team){
 				if(userId==""){
-					var weChatUrl = "/followteam"
-					var json = "{url:"+weChatUrl+",competitionId:"+competitionId+",team:"+team+"}"
 					window.location.href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+json+"#wechat_redirect";
 					return false;
 				}

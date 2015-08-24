@@ -351,13 +351,13 @@ router.get('/share',function(req,res,next){
 				var Sapi_Ticket = results.ticket;
 				console.log(Sapi_Ticket);
 				Time_Ticket = time;
-				var webUrl = "http://basketball.avosapps.com/share";
+				var webUrl = "http://test.ima9ic.co/basketball.avosapps.com/share";
 				var ret = sign(Sapi_Ticket,webUrl);
 				res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 			});
 		});	
 	}else{
-		var webUrl = "http://basketball.avosapps.com/share";
+		var webUrl = "http://test.ima9ic.co/basketball.avosapps.com/share";
 		var ret = sign(Sapi_Ticket,webUrl);
 		res.render('share',{timestamp:ret.timestamp,nonceStr:ret.nonceStr,signature:ret.signature});
 	}

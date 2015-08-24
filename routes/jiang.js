@@ -21,7 +21,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
-	
+	var competitionObj = new Competition();
+	competitionObj.id = competitionId;
 	var time = (new Date()).getTime();
 	var request = require('request');
 	var link = "/live?competitionId="+competitionId;

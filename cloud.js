@@ -21,6 +21,7 @@ AV.Cloud.afterDelete('CommentLike',hook.CommentLikeAfterDelete);
 AV.Cloud.beforeSave('CommentLike',hook.CommentLikeBeforeSave);
 AV.Cloud.beforeDelete('CommentLike',hook.CommentLikeBeforeDelete);
 AV.Cloud.afterSave("GameFollow",hook.GameFollowAfterSave);
+AV.Cloud.afterDelete('GameFollow',hook.GameFollowAfterDelete);
 
 
 

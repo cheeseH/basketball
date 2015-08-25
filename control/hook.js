@@ -188,3 +188,37 @@ exports.GameFollowAfterSave = function(req){
 
 }
 
+exports.GameFollowAfterDelete = function(req){
+	var follow = req.object;
+	var gameId = follow.get("gameId").id;
+	var query = new AV.Query("Game");
+	query.get(gameId,{
+		success : function(game){
+			var award = game.get('award');
+		
+			var awardLimit = game.get('awardLimit');	
+			
+			//error happened ,fix it
+			if(award < 0 ){
+				game.set('award',awardLimit);
+				game.save();
+				return;
+			}
+			else{
+				if(award-1 <= 0){
+					game.set('award',0);
+					game.save();
+					return;
+				}
+				else{
+					game.increment('award',-1);
+					game.save();
+					return;
+				}
+			}
+		},
+		error : function(error){
+			console.log(error);
+		}
+	})
+}

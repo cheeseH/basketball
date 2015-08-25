@@ -30,7 +30,6 @@ exports.CompetitionShareAfterSave = function(req){
 					return;
 				}
 				else{
-					console.log("here");
 					competetion.increment('award',0.5);
 					competetion.save();
 					return;
@@ -147,5 +146,45 @@ exports.CommentLikeBeforeDelete = function(request,response){
 			return response.error(error);
 		}
 	})
+}
+
+exports.GameFollowAfterSave = function(req){
+	var query = new AV.Query('Game');
+	var gameIdObj = req.object.get('gameId');
+	var gameId = gameIdObj.id;
+	query.get(competitionId,{
+		success : function(game){
+			var award = game.get('award');
+		
+			console.log(award);
+			var awardLimit = game.get('awardLimit');	
+			
+			//error happened ,fix it
+			if(award > awardLimit){
+				game.set('award',awardLimit);
+				game.save();
+				return;
+			}
+			else if( awardLimit == 0 ){
+				return;
+			}
+			else{
+				if(award+1 >= awardLimit){
+					game.set('award',awardLimit);
+					game.save();
+					return;
+				}
+				else{
+					game.increment('award',1);
+					game.save();
+					return;
+				}
+			}
+		},
+		error : function(error){
+			console.log(error);
+		}
+	})
+
 }
 

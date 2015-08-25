@@ -80,25 +80,12 @@ router.get('/authorize',function(req,res,next){
                                                   urlParams = urlParams.replace(new RegExp(",","gm"),"&");
                                                   var reUrl = "/"+urlParams;
 
-                                                  // var head = false;
-                                                  // for(var key in urlParams){
-                                                  //   if(key == 'url'){
-                                                  //     continue;
-                                                  //   }
-                                                  //   if( head == false){
-                                                  //     head = true;
-                                                  //     url = url+"?"+key+":"+urlParams[key];
-                                                  //   }
-                                                  //   else{
-                                                  //     url = url+"&"+key+":"+urlParams[key];
-                                                  //   }
-                                                  // }
 
-                                                    res.redirect(reUrl);
+                                                  res.redirect(reUrl);
                                                 },
                                                 error:function(user,error){
-                                                  console.log("error1");
                                                     console.log(error);
+
                                                     //
                                                 }
                                             })
@@ -118,19 +105,6 @@ router.get('/authorize',function(req,res,next){
                                                   urlParams = urlParams.replace(new RegExp(",","gm"),"&");
                                                   var reUrl = "/"+urlParams;
 
-                                                  // var head = false;
-                                                  // for(var key in urlParams){
-                                                  //   if(key == 'url'){
-                                                  //     continue;
-                                                  //   }
-                                                  //   if( head == false){
-                                                  //     head = true;
-                                                  //     url = url+"?"+key+":"+urlParams[key];
-                                                  //   }
-                                                  //   else{
-                                                  //     url = url+"&"+key+":"+urlParams[key];
-                                                  //   }
-                                                  // }
 
                                                     res.redirect(reUrl);
                                               },
@@ -147,7 +121,6 @@ router.get('/authorize',function(req,res,next){
                                     },
                                     error:function(error){
                                         console.log(error);
-                                        //return error code
                                     }
                                 })
 
@@ -226,17 +199,29 @@ router.get('/followteam',function(req,res,next){
 //   query.equalTo('commentId',commentId);
 //   query.euqalTo('userId',user);
 //   query.find({
-//     {
 //       success:function(likes){
 //         if(likes.length == 0){
-//           res.
+//           res.end();
 //         }
+//         else{
+//           var like = likes[0];
+//             like.destroy({
+//               success:function(like){
+//                 res.end();
+//               },
+//               error:function(like,error){
+//                 console.log(error);
+//                 res.end();
+//               }
+//             });
+//           }
 //       },
 //       error:function(error){
-
+//         console.log(error);
+//         res.end();
 //       }
 //     }
 //   })
-//})
+// })
 
 module.exports = router;

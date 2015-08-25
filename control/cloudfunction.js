@@ -1,14 +1,14 @@
 var AV = require('leanengine');
 var util = require('./cloudUtil');
 
+var Competition = AV.Object.extend('Competition');
 
 exports.CommentInit = function(req,res){
-	console.log(req);	
+
 	var _count = new Number(req.params.count);
 	var user = req.user;
 	var _competitionId = req.params.competitionId;
-	//find the hot first
-	var Competition = AV.Object.extend('Competition');
+	//find the hot first;
 	var competitionId = new Competition();
 	competitionId.id = _competitionId; 
 	var query = new AV.Query('Comment');
@@ -24,7 +24,6 @@ exports.CommentInit = function(req,res){
 			results.hot = new Array();
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
-					console.log('he1');
 					console.log(error);
 					res.error();
 					return;
@@ -35,7 +34,7 @@ exports.CommentInit = function(req,res){
 					for(var i = 0;i<comments.length;i++){
 						var atUser;
 						if(!comments[i].get("atUser")){
-							atUser = null;
+							atUser = "";
 						}
 						else{
 							atUser = comments[i].get("atUser");
@@ -67,7 +66,7 @@ exports.CommentInit = function(req,res){
 									for(var i = 0;i<comments.length;i++){
 										var atUser;
 										if(!comments[i].get("atUser")){
-											atUser = null;
+											atUser = "";
 										}
 										else{
 											atUser = comments[i].get("atUser");
@@ -104,7 +103,7 @@ exports.CommentInit = function(req,res){
 
 exports.GetOldComment = function(req,res){
 	var _maxTime = new Date(req.params.createdAt);
-	console.log(_maxTime);
+
 	var _count = new Number(req.params.count);
 	var user = req.user;
 	var _competitionId = req.params.competitionId;
@@ -113,6 +112,8 @@ exports.GetOldComment = function(req,res){
 	competitionId.id = _competitionId; 
 	var query = new AV.Query('Comment');
 	query.limit(_count);
+	query.include("userId");
+	query.include("atUser");
 	query.descending("createdAt");
 	query.equalTo("competitionId",competitionId);
 	query.lessThan("createdAt",_maxTime);
@@ -122,17 +123,19 @@ exports.GetOldComment = function(req,res){
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
 					console.log(error);
-					res.error();
+					return res.error();
+
 				}
 				else{
-					var atUser;
-					if(!comments[i].get("atUser")){
-						atUser = null;
-					}
-					else{
-						atUser = comments[i].get("atUser");
-					}
+					
 					for(var i = 0;i<comments.length;i++){
+						var atUser;
+						if(!comments[i].get("atUser")){
+							atUser = "";
+						}
+						else{
+							atUser = comments[i].get("atUser");
+						}
 						var resultObj = {
 							comment:comments[i],
 							likes:likes[i],
@@ -294,6 +297,7 @@ exports.TeamFollow = function(req,res){
 							competition.save();
 							res.success(follow);
 						},function(follow,error){
+							console.log(error);
 							res.error();
 							return;
 						})

@@ -29,5 +29,4 @@ AV.Cloud.afterDelete('GameFollow',hook.GameFollowAfterDelete);
 
 
 
-
 module.exports = AV.Cloud;

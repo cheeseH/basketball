@@ -13,6 +13,7 @@ exports.CommentInit = function(req,res){
 	competitionId.id = _competitionId; 
 	var query = new AV.Query('Comment');
 	query.include("userId");
+	query.include("atUser");
 	query.limit(_count);
 	query.descending("likes");
 	query.equalTo("competitionId",competitionId);
@@ -32,10 +33,18 @@ exports.CommentInit = function(req,res){
 					console.log('he2');
 					console.log(likes);
 					for(var i = 0;i<comments.length;i++){
+						var atUser;
+						if(!comments[i].get("atUser")){
+							atUser = null;
+						}
+						else{
+							atUser = comments[i].get("atUser");
+						}
 						var resultObj = {
 							comment:comments[i],
 							likes:likes[i],
-							user:comments[i].get("userId")
+							user:comments[i].get("userId"),
+							atUser:atUser
 						}
 						results.hot[i] = resultObj;
 					}
@@ -54,11 +63,20 @@ exports.CommentInit = function(req,res){
 									return;
 								}
 								else{
+
 									for(var i = 0;i<comments.length;i++){
+										var atUser;
+										if(!comments[i].get("atUser")){
+											atUser = null;
+										}
+										else{
+											atUser = comments[i].get("atUser");
+										}
 										var resultObj = {
 											comment:comments[i],
 											likes:likes[i],
-											user:comments[i].get("userId")
+											user:comments[i].get("userId"),
+											atUser:atUser
 										}
 										results.recent[i] = resultObj;
 									}
@@ -107,11 +125,19 @@ exports.GetOldComment = function(req,res){
 					res.error();
 				}
 				else{
+					var atUser;
+					if(!comments[i].get("atUser")){
+						atUser = null;
+					}
+					else{
+						atUser = comments[i].get("atUser");
+					}
 					for(var i = 0;i<comments.length;i++){
 						var resultObj = {
 							comment:comments[i],
 							likes:likes[i],
-							user:comments[i].get("userId")
+							user:comments[i].get("userId"),
+							atUser:atUser
 						}
 						results[i] = resultObj;
 					}

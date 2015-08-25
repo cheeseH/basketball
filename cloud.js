@@ -12,6 +12,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 	var user = req.user;
 	if(typeof(user) == 'undefined'){
 		res.error();
+		return;
 	}
 	var followObj = req.params;
 	var competitionId = followObj.competitionId;
@@ -48,6 +49,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 										break;
 									default:
 										res.error();
+										return;
 										
 								}
 								console.log(award);
@@ -58,22 +60,26 @@ AV.Cloud.define('teamfollow',function(req,res){
 									competition.set('award',awardLimit);
 									competition.save();
 									res.success(follow);
+									return;
 								}
 								else if( awardLimit == 0 ){
 									competition.save();
-									res.success();
+									res.success(follow);
+									return;
 								}
 								else{
 									if(award+1 >= awardLimit){
 										competition.set('award',awardLimit);
 										competition.save();
 										res.success(follow);
+										return;
 									}
 									else{
 										console.log("here");
 										competition.increment('award',1);
 										competition.save();
 										res.success(follow);
+										return;
 									}
 								}
 							
@@ -81,6 +87,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 							error:function(follow,error){
 								console.log(error);
 								res.error();
+								return;
 							}
 						});
 					} 
@@ -107,6 +114,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 									break;
 								default:
 									res.error();
+									return;
 									
 							}
 							switch(oldTeam){
@@ -133,6 +141,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 								break;
 							default:
 								res.error();
+								return;
 									
 							}
 				
@@ -140,6 +149,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 							res.success(follow);
 						},function(follow,error){
 							res.error();
+							return;
 						})
 						
 					}
@@ -147,6 +157,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 				error:function(error){
 					console.log(error);
 					res.error();
+					return;
 				}
 			})
 
@@ -154,6 +165,7 @@ AV.Cloud.define('teamfollow',function(req,res){
 		error:function(error){
 			console.log(error);
 			res.error();
+			return;
 		}
 	})
 	
@@ -278,18 +290,18 @@ AV.Cloud.define('commentInit',function(req,res){
 	query.include("userId");
 	query.limit(_count);
 	query.descending("likes");
-	query.descending("createdAt");
 	query.equalTo("competitionId",competitionId);
 	var results = new Object();
 	query.find({
 		success:function(comments){
 			console.log('hahah');
-			results.recent = new Array(comments.length);
+			results.hot = new Array();
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
 					console.log('he1');
 					console.log(error);
 					res.error();
+					return;
 				}
 				else{
 					console.log('he2');
@@ -297,9 +309,10 @@ AV.Cloud.define('commentInit',function(req,res){
 					for(var i = 0;i<comments.length;i++){
 						var resultObj = {
 							comment:comments[i],
-							likes:likes[i]
+							likes:likes[i],
+							user:comments[i].get("userId")
 						}
-						results.recent[i] = resultObj;
+						results.hot[i] = resultObj;
 					}
 					var newQuery = new AV.Query('Comment');
 					query.include("userId")
@@ -308,21 +321,24 @@ AV.Cloud.define('commentInit',function(req,res){
 					query.equalTo("competitionId",competitionId);
 					query.find({
 						success:function(comments){
-							results.hot = new Array(comments.length);
+							results.recent = new Array();
 							util.forEachComments(user,0,comments,0,function(likes,error){
 								if(error){
 									console.log(error);
 									res.error();
+									return;
 								}
 								else{
 									for(var i = 0;i<comments.length;i++){
 										var resultObj = {
 											comment:comments[i],
-											likes:likes[i]
+											likes:likes[i],
+											user:comments[i].get("userId")
 										}
-										results.hot[i] = resultObj;
+										results.recent[i] = resultObj;
 									}
 									res.success(results);
+									return;
 								}
 							})
 						},
@@ -359,7 +375,7 @@ AV.Cloud.define('getOldComment',function(req,res){
 	query.lessThan("createdAt",_maxTime);
 	query.find({
 		success:function(comments){
-			var results = new Array(comments.length);
+			var results = new Array();
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
 					console.log(error);
@@ -369,7 +385,8 @@ AV.Cloud.define('getOldComment',function(req,res){
 					for(var i = 0;i<comments.length;i++){
 						var resultObj = {
 							comment:comments[i],
-							likes:likes[i]
+							likes:likes[i],
+							user:comments[i].get("userId")
 						}
 						results[i] = resultObj;
 					}

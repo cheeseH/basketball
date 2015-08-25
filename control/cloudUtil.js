@@ -22,7 +22,10 @@ function getLikes(user,comment,callback){
 
 
 exports.forEachComments = function(user,i,comments,count,callback){
-	var likes = new Array(comments.length);
+	var likes = new Array();
+	if(comments.length == 0){
+		return callback(likes);
+	}
 	for(;i<comments.length;i++){
 		(function (i) {
 			console.log(i);

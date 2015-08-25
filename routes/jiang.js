@@ -91,11 +91,9 @@ router.get('/live', function(req, res, next) {
 						}
 						var results = JSON.parse(body);
 						var Sapi_Ticket = results.ticket;
-						console.log(Sapi_Ticket);
 						Time_Ticket = time;
 						var webUrl = "http://test.ima9ic.co"+req.url;
 						var ret = sign(Sapi_Ticket,webUrl);
-						console.log(ret);
 						if(userId!=""){
 							var teamfollow = new AV.Query(TeamFollow);
 							teamfollow.equalTo("userId",userId);
@@ -119,7 +117,6 @@ router.get('/live', function(req, res, next) {
 			}else{
 				var webUrl = "http://test.ima9ic.co"+req.url;
 				var ret = sign(Sapi_Ticket,webUrl);
-				console.log(ret);
 				if(userId!=""){
 					var teamfollow = new AV.Query(TeamFollow);
 					teamfollow.equalTo("userId",userId);
@@ -150,7 +147,7 @@ router.get('/getComment',function(req,res,next){
 	var competitionId = req.query.competitionId;
 	var user = AV.User.current();
 	var userId = user ? user.id : "";
-	AV.Query.doCloudQuery('select count(*) from Comment',{
+	AV.Query.doCloudQuery('select count(*) from Comment where objectId=?',[competitionId],{
 		success:function(result){
 			var comment_number = result.count;
 			//找出最热门评论

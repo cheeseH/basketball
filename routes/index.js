@@ -80,7 +80,6 @@ router.get('/authorize',function(req,res,next){
                                                   urlParams = urlParams.replace(new RegExp(",","gm"),"&");
                                                   var reUrl = "/"+urlParams;
 
-
                                                   res.redirect(reUrl);
                                                 },
                                                 error:function(user,error){
@@ -104,7 +103,7 @@ router.get('/authorize',function(req,res,next){
                                                   urlParams = urlParams.replace(new RegExp("~","gm"),"=");
                                                   urlParams = urlParams.replace(new RegExp(",","gm"),"&");
                                                   var reUrl = "/"+urlParams;
-
+                                                  console.log(reUrl);
 
                                                     res.redirect(reUrl);
                                               },

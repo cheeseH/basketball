@@ -7,6 +7,8 @@ var TeamFollow = AV.Object.extend("TeamFollow");
 var User = AV.Object.extend("_User");
 var Comment = AV.Object.extend("Comment");
 var urlUtil = require('../control/urlUtil');
+var Report = AV.Object.extend("Report");
+var Team = AV.Object.extend("Team");
 
 var router = express.Router();
 var Sapi_Ticket = "";
@@ -144,17 +146,63 @@ router.get('/live', function(req, res, next) {
 	});
 });
 
+router.get('/comment',function(req,res,next){
+	var content = req.query.content;
+	var competitionId = req.query.competitionId;
+	var userId = req.AV.user.id;
+	var comment = new Comment();
+	var user = new User();
+	user.id = userId;
+	var competition = new Competition();
+	competition.id = competitionId;
+	if(req.query.atUserId){
+		var atUser = new User();
+		atUser.id = req.query.atUserId;
+		comment.set("atUser",atUser);
+	}
+	comment.set("userId",user);
+	comment.set("competitionId",competition);
+	comment.set("content",content);
+	comment.set("likes",0);
+	comment.save(null,{
+		success:function(comment){
+			comment.createdAt = format_date(comment.createdAt);
+			var query = new AV.Query("_User");
+			query.equalTo("objectId",comment.get("userId").id);
+			query.find({
+				success:function(user){
+					user = user[0];
+					res.json({id:comment.id,createdAt:comment.createdAt,likes:comment.get("likes"),content:comment.get("content"),nickname:user.get("nickname"),userId:comment.get("userId").id,avatorUrl:user.get("avatorUrl")});
+					res.end();
+				},
+				error:function(object,error){
+					res.json({error:error});
+					res.end();
+				}
+			})
+			
+			
+		},
+		error:function(object,error){
+			res.json({error:error});
+			res.end();
+		}
+	});
+});
+
 router.get('/getComment',function(req,res,next){
 	var competitionId = req.query.competitionId;
 	var user = AV.User.current();
 	var userId = user ? user.id : "";
-	AV.Query.doCloudQuery('select count(*) from Comment where objectId=?',[competitionId],{
-		success:function(result){
-			var comment_number = result.count;
+	var competitionObj = new Competition();
+	competitionObj.id = competitionId;
+	var countQuery = new AV.Query(Comment);
+	countQuery.equalTo("competitionId",competitionObj);
+	countQuery.count({
+		success:function(count){
+			var comment_number = count;
 			//找出最热门评论
 			var commentQuery = new AV.Query(Comment);
-			var competitionObj = new Competition();
-			competitionObj.id = competitionId;
 			commentQuery.include("userId");
 			commentQuery.limit(5);
 			commentQuery.descending("likes");
@@ -210,6 +258,7 @@ router.get('/getComment',function(req,res,next){
 
 });
 
+
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
 	var user = new req.AV.user;
@@ -226,6 +275,141 @@ router.get('/commentLike',function(req,res,next){
 		error:function(object,error){
 			res.json({msg:"error"});
 			res.end();
+		}
+	});
+});
+
+router.get('/getReport',function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var query = new AV.Query(Competition);
+	query.include("reportId");
+	query.equalTo("objectId",competitionId);
+	query.find({
+		success:function(competition){
+			var number = 0;
+			var report = competition[0].get("reportId");
+			if(report){
+				number = 1;
+			}
+			res.json({report:report,number:number});
+			res.end();
+		},
+		error:function(object,error){
+			res.json(error);
+			res.end();
+		}
+	});
+
+});
+
+router.get("/report",function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var content = req.query.content;
+	var author = req.query.author;
+	var title = req.query.title;
+	var report = new Report();
+	report.set("title",title);
+	report.set("author",author);
+	report.set("content",content);
+	report.save(null,{
+		success:function(data){
+			var query = new AV.Query(Competition);
+			query.equalTo("objectId",competitionId);
+			query.find({
+				success:function(competition){
+					competition[0].set("reportId",data);
+					competition[0].save({
+						success:function(data){
+							res.json({msg:"ok"});
+							res.end();
+						},
+						error:function(object,error){
+							res.jspn({msg:error});
+							res.end();
+						}
+					});
+				},
+				error:function(object,error){
+					res.json({msg:"error"});
+					res.end();
+				}
+			});
+		},
+		error:function(object,error){
+			res.json({msg:"error"});
+			res.end();
+		}
+	})
+});
+
+router.get("/reportEdit",function(req,res,next){
+	var competitionId = req.query.competitionId;
+	res.render("reportEdit",{competitionId:competitionId});
+});
+
+router.get("/getStatistics",function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var query = new AV.Query(Competition);
+	query.equalTo("objectId",competitionId);
+	query.find({
+		success:function(competition){
+			var statistics = competition[0].get("statistics");
+			var number = 0;
+			if(statistics){
+				number = 1;
+			}
+			res.json({statistics:statistics,number:number});
+			res.end();
+		},
+		error:function(object,error){
+			res.json({error:error});
+			res.end();
+		}
+	});
+});
+
+router.get("/statistics",function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var statistics = req.query.statistics;
+	var query = new AV.Query(Competition);
+	query.equalTo("objectId",competitionId);
+	query.find({
+		success:function(competition){
+			competition[0].set("statistics",statistics);
+			competition[0].save({
+				success:function(data){
+					res.json({msg:"ok"});
+					res.end();
+				},
+				error:function(object,error){
+					res.json({msg:"error"});
+					res.end();
+				}
+			})
+			
+		},
+		error:function(object,error){
+			res.json({msg:"error"});
+			res.end();
+		}
+	});
+});
+
+router.get("/statisticsEdit",function(req,res,next){
+	var competitionId = req.query.competitionId;
+	var query = new AV.Query(Competition);
+	query.include("teamAId");
+	query.include("teamBId");
+	query.equalTo("objectId",competitionId);
+	query.find({
+		success:function(competition){
+			competition = competition[0];
+			var teamA = competition.get("teamAId").get("name");
+			var teamB = competition.get("teamBId").get("name");
+			res.render("statisticsEdit",{teamA:teamA,teamB:teamB,competitionId:competitionId});
+		},
+		error:function(object,error){
+			res.render("error");
 		}
 	});
 });
@@ -268,49 +452,7 @@ router.get('/refresh',function(req,res,next){
 		}
 	});
 });
-router.get('/comment',function(req,res,next){
-	var content = req.query.content;
-	var competitionId = req.query.competitionId;
-	var userId = req.AV.user.id;
-	var comment = new Comment();
-	var user = new User();
-	user.id = userId;
-	var competition = new Competition();
-	competition.id = competitionId;
-	if(req.query.atUserId){
-		var atUser = new User();
-		atUser.id = req.query.atUserId;
-		comment.set("atUser",atUser);
-	}
-	comment.set("userId",user);
-	comment.set("competitionId",competition);
-	comment.set("content",content);
-	comment.set("likes",0);
-	comment.save(null,{
-		success:function(comment){
-			comment.createdAt = format_date(comment.createdAt);
-			var query = new AV.Query("_User");
-			query.equalTo("objectId",comment.get("userId").id);
-			query.find({
-				success:function(user){
-					user = user[0];
-					res.json({id:comment.id,createdAt:comment.createdAt,likes:comment.get("likes"),content:comment.get("content"),nickname:user.get("nickname"),userId:comment.get("userId").id,avatorUrl:user.get("avatorUrl")});
-					res.end();
-				},
-				error:function(object,error){
-					res.json({error:error});
-					res.end();
-				}
-			})
-			
-			
-		},
-		error:function(object,error){
-			res.json({error:error});
-			res.end();
-		}
-	});
-});
+
 
 
 function format_date(date){

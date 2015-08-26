@@ -1,0 +1,49 @@
+.report{
+	margin-left: 40px;
+	margin-right: 40px;
+}
+.report_title{
+	font-size: 36px;
+	color: #535353;
+	margin-top: 42px;
+}
+.report_info{
+	color:#808080;
+	font-size: 22px;
+	margin-top: 20px;
+	text-align: left;
+}
+.report_info .clock_img{
+	display: inline-block;
+	margin-right: 10px;
+}
+.report_info .report_time{
+	display: inline-block;
+	margin-right: 30px;
+}
+.report_info .author_img{
+	display: inline-block;
+	margin-right: 10px;
+}
+.report_info .report_author{
+	display: inline-block;
+}
+.report_line{
+	height: 1px;
+	border-top-style: solid;
+	border-top-width: 1px;
+	filter:alpha(opacity=50);
+	opacity: 0.5;
+	-moz-opacity: 0.5;
+	margin-top:30px;
+}
+.report_content{
+	margin-top: 30px;
+	font-size: 28px;
+	color: #404040;
+	line-height: 34px;
+}
+.report_content img{
+	width: 100%;
+	margin-bottom: 40px;
+}

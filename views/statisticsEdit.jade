@@ -1,0 +1,157 @@
+doctype html
+html
+	head
+		title 统计编辑
+		meta(charset="UTF-8")
+		link(href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css",rel="stylesheet")
+		script(src="/javascripts/jquery.min.js")
+		script(src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js")
+		script(type="text/javascript").
+			var statisticsRow = 3;
+			var statisticsCol = 1;
+			var playerACol = 1;
+			var playerARow = 1;
+			var playerBCol = 1;
+			var playerBRow = 1;
+			function addStatistics(){
+				for(var i = 1 ; i <= statisticsRow ; i++){
+					if(i==1){
+						$(document.getElementById("statistics"+i+""+statisticsCol)).after("<th id=statistics"+i+(statisticsCol+1)+"><input class='form-control' type='text'/></th>");
+					}else{
+						$(document.getElementById("statistics"+i+""+statisticsCol)).after("<td id=statistics"+i+(statisticsCol+1)+"><input class='form-control' type='text'/></td>");
+					}
+					
+				}
+				statisticsCol++;
+			};
+			function addPlayerCol(team){
+				var playerRow = playerBRow;
+				var playerCol = playerBCol;
+				if(team=="A"){
+					playerRow = playerARow;
+					playerCol = playerACol;
+				}
+				for(var i = 1 ; i <= playerRow ; i++){
+					if(i==1){
+						$(document.getElementById("player"+team+i+""+playerCol)).after("<th id=player"+team+i+(playerCol+1)+"><input class='form-control' type='text'/></th>");
+					}else{
+						$(document.getElementById("player"+team+i+""+playerCol)).after("<td id=player"+team+i+(playerCol+1)+"><input class='form-control' type='text'/></td>");
+					}
+					
+				}
+				if(team=="A"){
+					playerACol++;
+				}else{
+					playerBCol++;
+				}
+			};
+			function addPlayerRow(team){
+				var playerCol = playerBCol;
+				var playerRow = playerBRow;
+				if(team=="A"){
+					playerCol = playerACol;
+					playerRow = playerARow;
+				}
+				var HTML = "<tr>";
+				for(var i = 1 ; i <= playerCol ; i++){
+					HTML = HTML + "<td id=player"+team+(playerRow+1)+""+i+"><input class='form-control' type='text'/></td>";
+				}
+				HTML += "</tr>";
+				$(document.getElementById(team)).append(HTML);
+				if(team=="A"){
+					playerARow++;
+				}else{
+					playerBRow++;
+				}
+			};
+			function send(){
+				var json = {};
+				var statisticsArr = new Array();
+				for(var i = 1 ; i <= statisticsRow; i++){
+					statisticsArr[i-1] = new Array();
+					for(var j = 1 ; j <= statisticsCol; j++){
+						if(j==1){
+							statisticsArr[i-1][j-1] = $(document.getElementById("statistics"+i+""+j)).text() == "" ? "-" : $(document.getElementById("statistics"+i+""+j)).text();
+						}else{
+							statisticsArr[i-1][j-1] = $(document.getElementById("statistics"+i+""+j)).children().val() == "" ? "-" : $(document.getElementById("statistics"+i+""+j)).children().val();
+						}
+					}
+				}
+				json.statistics = statisticsArr;
+				var playerAArr = new Array();
+				for(var i = 1 ; i <= playerARow; i++){
+					playerAArr[i-1] = new Array();
+					for(var j = 1 ; j <= playerACol ; j++){
+						if(i==1&&j==1){
+							playerAArr[i-1][j-1] = $(document.getElementById("playerA"+i+""+j)).text() == "" ? "-" : $(document.getElementById("playerA"+i+""+j)).text();
+						}else{
+							playerAArr[i-1][j-1] = $(document.getElementById("playerA"+i+""+j)).children().val() == "" ? "-" : $(document.getElementById("playerA"+i+""+j)).children().val();
+						}
+						
+					}
+				}
+				json.playerA = playerAArr;
+				var playerBArr = new Array();
+				for(var i = 1 ; i <= playerBRow; i++){
+					playerBArr[i-1] = new Array();
+					for(var j = 1 ; j <= playerBCol ; j++){
+						if(i==1&&j==1){
+							playerBArr[i-1][j-1] = $(document.getElementById("playerB"+i+""+j)).text() == "" ? "-" : $(document.getElementById("playerB"+i+""+j)).text();
+						}else{
+							playerBArr[i-1][j-1] = $(document.getElementById("playerB"+i+""+j)).children().val() == "" ? "-" : $(document.getElementById("playerB"+i+""+j)).children().val();
+						}
+						
+					}
+				}
+				json.playerB = playerBArr;
+				var url = "/statistics?competitionId=#{competitionId}&statistics="+JSON.stringify(json);
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						success:function(data){
+							if(data.msg=="ok"){
+								alert("插入成功");
+							}else{
+								alert("插入失败");
+							}
+						}
+					});
+			}
+	body
+		div.container
+			table.talbe
+				caption 得分统计
+				thead
+					tr
+						th#statistics11 队伍
+				tbody
+					tr
+						td#statistics21 #{teamA}
+					tr
+						td#statistics31 #{teamB}
+			div(align="center")
+				button.btn.btn-primary(onclick="addStatistics()") 添加列
+			hr
+			table.table
+				caption #{teamA}球员数据
+				thead
+					tr
+						th#playerA11 球员
+				tbody#A
+			div(align="center")
+				button.btn.btn-primary(onclick="addPlayerCol('A')") 添加列
+				button.btn.btn-primary(onclick="addPlayerRow('A')") 添加行
+			hr
+			table.table
+				caption #{teamB}球员数据
+				thead
+					tr
+						th#playerB11 球员
+				tbody#B
+			div(align="center")
+				button.btn.btn-primary(onclick="addPlayerCol('B')") 添加列
+				button.btn.btn-primary(onclick="addPlayerRow('B')") 添加行
+			hr
+			div(align="center")
+				button.btn.btn-primary(onclick="send()") 确定

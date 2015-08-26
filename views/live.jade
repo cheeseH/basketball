@@ -4,7 +4,8 @@ html
 		title 直播厅
 		meta(charset="UTF-8")
 		meta(name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no")
-		link(rel="stylesheet",href="/stylesheets/live.css")
+		link(rel="stylesheet" href="/stylesheets/live.css")
+		link(rel="stylesheet" href="/stylesheets/report.css")
 		script(src="/javascripts/jquery.min.js")
 		script(src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js")
 		script(type="text/javascript").
@@ -41,6 +42,7 @@ html
 				alert(JSON.stringify(res));
 			});
 		script(type="text/javascript").
+			var isComment = true;
 			var weChatUrl = "\"/live\"";
 			
 			var conversationId = "#{conversationId}";
@@ -68,19 +70,19 @@ html
 							var hotUsers = data.hotUsers;
 							var newUsers = data.newUsers;
 							var hasComment = false;
-
+							$(".content").attr("style","background-color:#FFFFFF;");
 							if(comment_number==0){
-								$(".content .container").attr("style","background-color:#F0F0F0;");
-								$(".content .container").append("<div class=empty style=background-image:url('images/empty-comment@2x.png')></div>")
+								$(".content").attr("style","background-color:#F0F0F0;");
+								$(".content .container").append("<div class=empty style=background-image:url('images/empty-comment@2x.png')></div>");
 							}else if(comment_number>=1000){
-								$(".content .container").append("<p class=comment_number> 吐槽数: "+comment_number/1000+"K</p>")
+								$(".content .container").append("<p class=comment_number>吐槽数: "+comment_number/1000+"K</p>");
 								hasComment=true;
 							}else{
-								$(".content .container").append("<p class=comment_number> 吐槽数: "+comment_number+"</p>") 
+								$(".content .container").append("<p class=comment_number>吐槽数: "+comment_number+"</p>");
 								hasComment=true;
 							}
 							if(hasComment){
-								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>热门吐槽</p></div><div class=line></div></div>")
+								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>热门吐槽</p></div><div class=line></div></div>");
 								for(var i = 0 ; i < hotComments.length ; i++){
 									var HTML = 	"<img class=user_img src="+hotUsers[i].avatorUrl+" alt='' onclick=commentAt(\""+hotUsers[i].objectId+"\",\""+hotUsers[i].nickname+"\")>"+
 													"<div class=comment_main>"+
@@ -103,7 +105,7 @@ html
 									}
 									$(".content .container").append(HTML);
 								}
-								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>")
+								$(".content .container").append("<div class=comment_type id=new><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>")
 								for(var i = 0 ; i < newComments.length ; i++){
 									var HTML = "<img class=user_img src="+newUsers[i].avatorUrl+" alt='' onclick=commentAt(\""+newUsers[i].objectId+"\",\""+newUsers[i].nickname+"\")>"+
 														"<div class=comment_main>"+
@@ -126,7 +128,7 @@ html
 									$(".content .container").append(HTML);
 								}
 							}
-							$(".content .container").append("<div class=edit><input type=text data-at=''><a onclick='return send()' href='#'>发送</a></div>");
+							$(".content .container").append("<div class=edit><input type=text data-at='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
 						}
 					});
 			}
@@ -138,22 +140,81 @@ html
 						url:url,
 						dataType:"json",
 						success:function(data){
-
+							var number = data.number;
+							$(".content").attr("style","background-color:#FFFFFF;");
+							if(number == 0){
+								$(".content").attr("style","background-color:#F0F0F0;");
+								$(".content .container").append("<div class=empty style=background-image:url('images/empty-report@2x.png')></div>");
+							}else{
+								var report = data.report;
+								var content = report.content;
+								$(".content .container").append(content);
+								$(".report_content img").attr("width","");
+								$(".report_content img").attr("height","");
+							}
 						}
-					})
+					});
 			}
 
-			function getStatics(){
-				var url = "/getStatics?competitionId="+competitionId;
+			function getStatistics(){
+				var url = "/getStatistics?competitionId="+competitionId;
 				$.ajax({
 						type:"GET",
 						url:url,
 						dataType:"json",
 						success:function(data){
+							var number = data.number;
+							$(".content").attr("style","background-color:#FFFFFF;");
+							if(number==0){
+								$(".content").attr("style","background-color:#F0F0F0;");
+								$(".content .container").append("<div class=empty style=background-image:url('images/empty-statistics@2x.png')></div>");
+							}else{
+								var statistics = JSON.parse(data.statistics);
 
+								var HTML = "<div class=statistics_type>"+
+												"<p>得分统计</p>"+
+											"</div>";
+								HTML += statisticsTable(statistics.statistics);
+
+								HTML += "<div class=statistics_type>"+
+												"<p>#{teamA}球员数据</p>"+
+											"</div>";
+								HTML += statisticsTable(statistics.playerA);
+								HTML += "<div class=statistics_type>"+
+												"<p>#{teamB}球员数据</p>"+
+											"</div>";
+								HTML += statisticsTable(statistics.playerB);
+								$(".content .container").append(HTML);
+							}
 						}
 					})
 			}
+			function statisticsTable(statistics){
+				var HTML = "<table class=statistics cellpadding=0 cellspacing=0><thead>";
+				for(var i=0;i<statistics.length;i++){
+					for(var j=0;j<statistics[i].length;j++){
+						if(i==0){
+							if(j==statistics[i].length-1){
+								HTML += "<th>"+statistics[i][j]+"</th></tr></thead><tbody>";
+							}else if(j==0){
+								HTML += "<tr><th>"+statistics[i][j]+"</th>";
+							}else{
+								HTML += "<th>"+statistics[i][j]+"</th>";
+							}
+						}else{
+							if(j==0){
+								HTML += "<tr><td style='border-top:none;'>"+statistics[i][j]+"</td>";
+							}else if(j==statistics[i].length-1){
+								HTML += "<td style='border-top:none;'>"+statistics[i][j]+"</td></tr>"
+							}else{
+								HTML += "<td style='border-top:none;'>"+statistics[i][j]+"</td>";
+							}
+						}
+					}
+				}
+				HTML += "</tbody></table>";
+				return HTML;
+			};
 			function refresh(){
 				var url = "/refresh?competitionId="+competitionId;
 				$.ajax({
@@ -194,37 +255,44 @@ html
 						$(".center span").css("color","#929292");
 						break;
 					case 3:
-						$(".right img").attr("src","images/icon-statics@2x.png");
+						$(".right img").attr("src","images/icon-statistics@2x.png");
 						$(".right span").css("color","#929292");
 						break;
 				}
+				navbar = i;
 				switch(i){
 					case 1:
+						isComment=true;
 						$(".left img").attr("src","images/icon-comments-active@2x.png");
 						$(".left span").css("color","#CB1A48");
 						getComment();
 						break;
 					case 2:
+						isComment=false;
 						$(".center img").attr("src","images/icon-report-active@2x.png");
 						$(".center span").css("color","#CB1A48");
 						getReport();
 						break;
 					case 3:
-						$(".right img").attr("src","images/icon-statics-active@2x.png");
+						isComment=false;
+						$(".right img").attr("src","images/icon-statistics-active@2x.png");
 						$(".right span").css("color","#CB1A48");
-						getStatics();
+						getStatistics();
 						break;
 				}
-				
-				navbar = i;
 				return true;
 			};
 
 			function commentAt(userId,nickname){
 				$("input").attr("data-at",userId);
-				$("input").val("@"+nickname+": ");
-				$("input").attr("data-name","@"+nickname+":");
+				$("input").attr("placeholder","@"+nickname+":");
+				$("input").focus();
 			};
+
+			function lost(){
+				$("input").attr("data-at","");
+				$("input").attr("placeholder","");
+			}
 
 			function send(){
 				if(userId==""){
@@ -232,11 +300,11 @@ html
 					return false;
 				}
 				var content = $("input").val();
-				if($("input").attr("data-at")!=""){
-					var name = $("input").attr("data-name");
-					if(content.indexOf(name)<0){
-						$("input").attr("data-at","");
-					}
+				var reg = new RegExp("^[ ]+$");
+				if(reg.test(content)){
+					alert("发送的内容不能为空或全为空格");
+					$("input").val("");
+					return false;
 				}
 				//发送内容
 				var url = "/comment?competitionId="+competitionId+"&content="+content;
@@ -269,9 +337,21 @@ html
 					});
 				//清除内容
 				$("input").val("");
+				$("input").attr("data-at","");
+				$("input").attr("placeholder","");
 				return true;
 			};
+			function isScrollBottom(obj){
+				if(obj.scrollTop+obj.clientHeight==obj.scrollHeight){
+					return true;
+				}
+				return false;
+			}
+			function scrollBottom(obj){
+				if(isComment&&isScrollBottom(obj)){
 
+				}
+			}
 			function commentLike(t,commentId){
 				if(userId==""){
 					window.location.href=authorizeUrl;
@@ -410,7 +490,7 @@ html
 					span 战报
 			div.btn.right
 				button(onclick="return choose(3)")
-					img(src="images/icon-statics@2x.png", alt="")
+					img(src="images/icon-statistics@2x.png", alt="")
 					span 统计
 		div.content
 			div.container

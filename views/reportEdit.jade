@@ -1,0 +1,67 @@
+doctype html
+html
+	head
+		title 报道编辑
+		meta(charset="UTF-8")
+		link(href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css",rel="stylesheet")
+		script(src="/javascripts/jquery.min.js")
+		script(src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js")
+		link(rel="stylesheet",type="text/css",href='stylesheets/simditor.css')
+		script(type="text/javascript").
+			function send(){
+				var time = new Date();
+				var month = time.getMonth()+1;
+				var day = time.getDate();
+				var date = (month<10 ? "0"+month : month+"") + "-" + (day<10 ? "0"+day : day+"");
+				var HTML = "<div class=report>"+
+								"<p class=report_title>"+$("#title").val()+"</p>"+
+								"<div class=report_info>"+
+									"<img class='clock_img' src='http://7ls0rp.com1.z0.glb.clouddn.com/icon-clock@2x.png'>"+
+									"<p class=report_time>"+date+"</p>"+
+									"<img class='author_img' src='http://7ls0rp.com1.z0.glb.clouddn.com/icon-author@2x.png'>"+
+									"<p class=report_author>"+$("#author").val()+"</p>"+
+								"</div>"+
+								"<div class=report_line><div>"+
+								"<div class=report_content>"+
+									$("#content").val()+
+								"</div>"+
+							"</div>";
+				var url = "/report?content="+HTML+"&title="+$("#title").val()+"&author="+$("#author").val()+"&competitionId="+"#{competitionId}";
+				$.ajax({
+						type:"GET",
+						url:url,
+						dataType:"json",
+						success:function(data){
+							if(data.msg=="ok"){
+								alert("插入成功");
+							}else{
+								alert("插入失败");
+							}
+						}
+					});
+			};
+	body
+		div.row.form-group(align="center")
+			label.control-label.col-sm-3(for="title") 标题
+			div.col-sm-6
+				input#title.form-control(type="text")
+		div.row.form-group(align="center")
+			label.control-label.col-sm-3(for="author") 作者
+			div.col-sm-6
+				input#author.form-control(type="text")
+		div.row.form-group
+			div.col-sm-3
+			div.col-sm-6
+				textarea.form-control#content
+				script(type="text/javascript",src='javascripts/module.js')
+				script(type="text/javascript",src='javascripts/hotkeys.js')
+				script(type="text/javascript",src="javascripts/uploader.js")
+				script(type="text/javascript",src='javascripts/simditor.js')
+				script(type="text/javascript").
+					var editor = new Simditor({
+							textarea:$("#content"),
+							toolbar: ['title','bold','italic','underline','strikethrough','ol','ul','link','image','hr','indent','outdent','alignment']
+						});
+		div.row.form-group
+			div.col-sm-offset-3.col-sm-6(align="center")
+				button.btn.btn-primary(onclick="send()") 发送

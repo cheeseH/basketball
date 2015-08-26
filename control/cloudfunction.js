@@ -4,7 +4,7 @@ var util = require('./cloudUtil');
 var Competition = AV.Object.extend('Competition');
 
 exports.CommentInit = function(req,res){
-
+	console.log(req);
 	var _count = new Number(req.params.count);
 	var user = req.user;
 	var _competitionId = req.params.competitionId;

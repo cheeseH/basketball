@@ -21,7 +21,8 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/live', function(req, res, next) {
+router.get('/live', function(req, res, next){
+	console.log(1);
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
 	competitionObj.id = competitionId;
@@ -98,7 +99,7 @@ router.get('/live', function(req, res, next) {
 						var ret = sign(Sapi_Ticket,webUrl);
 						if(userId!=""){
 							var teamfollow = new AV.Query(TeamFollow);
-							teamfollow.equalTo("userId",userId);
+							teamfollow.equalTo("userId",user);
 							teamfollow.equalTo("competitionId",competitionObj);
 							teamfollow.find({
 								success:function(teamfollow){
@@ -121,7 +122,7 @@ router.get('/live', function(req, res, next) {
 				var ret = sign(Sapi_Ticket,webUrl);
 				if(userId!=""){
 					var teamfollow = new AV.Query(TeamFollow);
-					teamfollow.equalTo("userId",userId);
+					teamfollow.equalTo("userId",user);
 					teamfollow.equalTo("competitionId",competitionObj);
 					teamfollow.find({
 						success:function(teamfollow){
@@ -190,9 +191,8 @@ router.get('/comment',function(req,res,next){
 });
 
 router.get('/getComment',function(req,res,next){
+	console.log(req.AV.user);
 	var competitionId = req.query.competitionId;
-	var user = AV.User.current();
-	var userId = user ? user.id : "";
 	var competitionObj = new Competition();
 	competitionObj.id = competitionId;
 	var countQuery = new AV.Query(Comment);
@@ -200,63 +200,33 @@ router.get('/getComment',function(req,res,next){
 	countQuery.count({
 		success:function(count){
 			var comment_number = count;
-			//找出最热门评论
-			var commentQuery = new AV.Query(Comment);
-			commentQuery.include("userId");
-			commentQuery.limit(5);
-			commentQuery.descending("likes");
-			commentQuery.descending("createdAt");
-			commentQuery.equalTo("competitionId",competitionObj);
-			commentQuery.find({
+			AV.Cloud.run("commentInit",{"competitionId":competitionId,"count":5},{
 				success:function(result){
-					var hotUsers = new Array();
-					for (var i = result.length - 1; i >= 0; i--) {
-						result[i].createdAt = format_date(result[i].createdAt);
-						hotUsers[i] = result[i].get("userId");
-					};
-					var hotComments = result;
-					
-
-					//找出最新评论
-					var commentQuery2 = new AV.Query(Comment);
-					commentQuery2.include("userId");
-					commentQuery2.limit(5);
-					commentQuery2.descending("createdAt");
-					commentQuery2.equalTo("competitionId",competitionObj);
-					commentQuery2.find({
-						success:function(result){
-							var newUsers = new Array();
-							for (var i = result.length - 1; i >= 0; i--) {
-								result[i].createdAt = format_date(result[i].createdAt);
-								newUsers[i] = result[i].get("userId");
-							};
-							var newComments = result;
-							if(userId!=""){
-								res.json({hotComments:hotComments,newComments:newComments,comment_number:comment_number,hotUsers:hotUsers,newUsers:newUsers});												
-								res.end();
-							}else{
-								res.json({hotComments:hotComments,newComments:newComments,comment_number:comment_number,hotUsers:hotUsers,newUsers:newUsers});
-								res.end()
-							}
-							
-						},
-						error:function(error){
-							res.render('error');
-						}
-					});
+					console.log(JSON.stringify(result));
+					for(var i = 0 ; i < result.hot.length ; i++){
+						result.hot[i].comment.createdAt = format_date(result.hot[i].comment.createdAt);
+						result.recent[i].comment.createdAt = format_date(result.recent[i].comment.createdAt);
+					}
+					res.json({comment:result,comment_number:comment_number});
+					res.end();
 				},
 				error:function(error){
-					res.render('error');
+					res.json({error:error});
+					res.end();
 				}
-			});		
+			})
 		},
 		error:function(error){
-			res.render('error');
+			res.json({error:error});
+			res.end;
 		}
 	});
 
 });
 
+router.get('/getOldComment',function(req,res,next){
+	var competitionId = req.query.competitionId;
+});
 
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;

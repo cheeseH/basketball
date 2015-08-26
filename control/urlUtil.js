@@ -29,8 +29,8 @@ exports.checkWx = function(req,res,next){
 				"http://basketball.avosapps.com/judge&response_type=code&scope=snsapi_base&state="+state+"#wechat_redirect");
 			return;
 		}
-		next();
+		return next();
 	}
-	next();
+	return next();
 
 } 

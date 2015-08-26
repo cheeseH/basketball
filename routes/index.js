@@ -40,7 +40,7 @@ router.get('/judge',function(req,res,next){
     var openId = result.openid;
     var unionid = result.unionid;
     var query = new AV.Query(AV.User);
-    query.equalTo('wechatId');
+    query.equalTo('wechatId',unionid);
     query.find({
       success:function(users){
         //no user

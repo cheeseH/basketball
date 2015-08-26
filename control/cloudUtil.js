@@ -3,7 +3,7 @@ var AV = require('leanengine');
 
 function getLikes(user,comment,callback){
 	if(!user){
-		callback(false);
+		return callback(false);
 	}
 	var query = new AV.Query('CommentLike');
 	query.equalTo('userId',user);

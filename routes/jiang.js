@@ -6,6 +6,7 @@ var Competition = AV.Object.extend("Competition");
 var TeamFollow = AV.Object.extend("TeamFollow");
 var User = AV.Object.extend("_User");
 var Comment = AV.Object.extend("Comment");
+var urlUtil = require('../control/urlUtil');
 
 var router = express.Router();
 var Sapi_Ticket = "";
@@ -18,7 +19,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-
+router.get('/live',urlUtil.checkWx);
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();

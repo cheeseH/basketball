@@ -3,6 +3,7 @@ var router = express.Router();
 var realtime = require('leancloud-realtime');
 var  AV = require('leanengine');
 var livert = require('../control/livert');
+var urlUtil = require('../control/urlUtil')
 /* GET home page. */
 
 
@@ -11,10 +12,68 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/req',function(req,res,next){
+  console.log(req.url);
+  res.render('index', { title: 'Express' });
+});
+
+router.get('/judge',function(req,res,next){
+  var code = req.quey.code;
+  var url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx8fb97e6277001984&secret=b08e0393a891b19fe8cabfd1a1ba3139'+
+  '&code='+code+'&grant_type=authorization_code';
+  var options =
+  {
+        method : 'GET',
+        url : url
+  };
+  request(url,options,function(err,response,body){
+    if(err){
+      return next(err);
+    }
+    if(response.statusCode != 200){
+          
+            render('index',statusCode);
+    }
+    var result = JSON.parse(body);
+    var token = result.access_token;
+    var openId = result.openid;
+    var unionid = result.unionid;
+    var query = new AV.Query(AV.User);
+    query.euqalTo('wechatId');
+    query.find({
+      success:function(users){
+        //no user
+        if(users.length == 0){
+          var reUrl =  urlUtil.transferStateToUrl(req.query.state);
+          reUrl = reUrl+"&checked=1";
+          res.redirect(reUrl);
+          return;
+        }
+        else{
+          AV.User.logIn(unionid,unionid,{
+            success:function(user){
+              var reUrl = urlUtil.transferStateToUrl(req.query.state);
+              res.redirect(reUrl);
+              return;
+            },
+            error:function(user,error){
+              console.log(error);
+              next(error);
+            }
+          })
+        }
+      },
+      error:function(error){
+        console.log(error);
+        next(error);
+      }
+    })
+})
+
+})
 
 
 router.get('/authorize',function(req,res,next){
-        console.log('authorize');
         if(req.query.code){
                 var code = req.query.code;
                 var request = require('request');

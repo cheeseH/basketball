@@ -222,3 +222,48 @@ exports.GameFollowAfterDelete = function(req){
 		}
 	})
 }
+
+
+exports.CompetitionAfterUpdate = function(req){
+	console.log(req);
+	var competition = req.object;
+	var award = competition.get('award');
+	var awardLimit = competition.get('awardLimit');
+	if(award>awardLimit){
+		competition.set("award",awardLimit);
+	}
+	else if(award<0){
+		competition.set("award",0);
+	}
+	competition.save(null,{
+		success:function(competition){
+			return;
+		},
+		error:function(competition,error){
+			console.log("CompetitionAfterUpdate");
+			console.log(error);
+		}
+	});
+}
+
+exports.GameAfterUpdate = function(req){
+	console.log(req);
+	var game = req.object;
+	var award = game.get('award');
+	var awardLimit = game.get('awardLimit');
+	if(award>awardLimit){
+		game.set("award",awardLimit);
+	}
+	else if(award<0){
+		game.set("award",0);
+	}
+	game.save(null,{
+		success:function(game){
+			return;
+		},
+		error:function(game,error){
+			console.log("gameAfterUpdate");
+			console.log(error);
+		}
+	});
+}

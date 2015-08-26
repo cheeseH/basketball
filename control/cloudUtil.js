@@ -28,7 +28,6 @@ exports.forEachComments = function(user,i,comments,count,callback){
 	}
 	for(;i<comments.length;i++){
 		(function (i) {
-			console.log(i);
 		            getLikes(user,comments[i] , function(like,error){
 		     	if(error){
 		     		return callback(null,error);

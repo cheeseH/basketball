@@ -20,7 +20,6 @@ exports.CommentInit = function(req,res){
 	var results = new Object();
 	query.find({
 		success:function(comments){
-			console.log('hahah');
 			results.hot = new Array();
 			util.forEachComments(user,0,comments,0,function(likes,error){
 				if(error){
@@ -29,8 +28,6 @@ exports.CommentInit = function(req,res){
 					return;
 				}
 				else{
-					console.log('he2');
-					console.log(likes);
 					for(var i = 0;i<comments.length;i++){
 						var atUser;
 						if(!comments[i].get("atUser")){
@@ -157,7 +154,6 @@ exports.GetOldComment = function(req,res){
 }
 
 exports.TeamFollow = function(req,res){
-	console.log(req);
 	var user = req.user;
 	if(typeof(user) == 'undefined'){
 		res.error();
@@ -165,7 +161,6 @@ exports.TeamFollow = function(req,res){
 	}
 	var followObj = req.params;
 	var competitionId = followObj.competitionId;
-	console.log(competitionId);
 	var competitionQuery = new AV.Query('Competition');
 	competitionQuery.get(competitionId,{
 		success:function(competition){
@@ -180,7 +175,6 @@ exports.TeamFollow = function(req,res){
 					if(follows.length == 0){
 						var TeamFollow = AV.Object.extend('TeamFollow');
 						var follow = new TeamFollow();
-						console.log(competition);
 						follow.set('userId',user);
 						follow.set('competitionId',competition);
 						follow.set('team',team);
@@ -201,7 +195,6 @@ exports.TeamFollow = function(req,res){
 										return;
 										
 								}
-								console.log(award);
 								var awardLimit = competition.get('awardLimit');	
 								
 								//error happened ,fix it
@@ -224,7 +217,6 @@ exports.TeamFollow = function(req,res){
 										return;
 									}
 									else{
-										console.log("here");
 										competition.increment('award',1);
 										competition.save();
 										res.success(follow);
@@ -241,7 +233,6 @@ exports.TeamFollow = function(req,res){
 						});
 					} 
 					else if(follows.length>0){
-						console.log('here1');
 						var follow = follows[0];
 						var oldTeam = follow.get("team");
 						follow.fetchWhenSave(true);
@@ -251,7 +242,6 @@ exports.TeamFollow = function(req,res){
 							var addB = 0;
 							switch(team){
 								case 0:
-									console.log('here3');
 									break;
 								case 1:
 									addA++;
@@ -271,7 +261,6 @@ exports.TeamFollow = function(req,res){
 								break;
 							case 1:
 								var likesA = competition.get('likesA');
-								console.log(likesA);
 								if(likesA<0 && ((likesA+addA-1)<0)){
 									competition.set('likesA',0);
 									break;
@@ -280,12 +269,10 @@ exports.TeamFollow = function(req,res){
 								break;
 							case 2:
 								var likesB = competition.get('likesB');
-								console.log(likesB);
 								if(likesB<0 && ((likesB+addB-1)<0)){
 									competition.set('likesA',0);
 									break;
 								}
-								console.log('here2');
 								competition.increment('likesB',-1);
 								break;
 							default:

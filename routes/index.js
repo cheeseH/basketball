@@ -18,7 +18,8 @@ router.get('/req',function(req,res,next){
 });
 
 router.get('/judge',function(req,res,next){
-  var code = req.quey.code;
+  var code = req.query.code;
+  var request = require("request");
   var url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx8fb97e6277001984&secret=b08e0393a891b19fe8cabfd1a1ba3139'+
   '&code='+code+'&grant_type=authorization_code';
   var options =
@@ -39,7 +40,7 @@ router.get('/judge',function(req,res,next){
     var openId = result.openid;
     var unionid = result.unionid;
     var query = new AV.Query(AV.User);
-    query.euqalTo('wechatId');
+    query.equalTo('wechatId');
     query.find({
       success:function(users){
         //no user

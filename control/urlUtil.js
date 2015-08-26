@@ -26,7 +26,7 @@ exports.checkWx = function(req,res,next){
 		if(!req.query.checked){
 			var state = transferUrlToState(requestUrl);
 			res.redirect("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri="+
-				"http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect");
+				"http://basketball.avosapps.com/judge&response_type=code&scope=snsapi_base&state="+state+"#wechat_redirect");
 			return;
 		}
 		next();

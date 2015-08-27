@@ -58,6 +58,7 @@ html
 			var authorizeUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect";
 
 			function getComment(){
+				$(".edit").remove();
 				$(".content .container").empty();
 				var url = "/getComment?competitionId="+competitionId;
 				$.ajax({
@@ -152,6 +153,7 @@ html
 			}
 
 			function getReport(){
+				$(".edit").remove();
 				$(".content .container").empty();
 				var url = "/getReport?competitionId="+competitionId;
 				$.ajax({
@@ -176,6 +178,7 @@ html
 			}
 
 			function getStatistics(){
+				$(".edit").remove();
 				$(".content .container").empty();
 				var url = "/getStatistics?competitionId="+competitionId;
 				$.ajax({
@@ -264,7 +267,6 @@ html
 			}
 
 			function choose(i){
-				$(".edit").remove();
 				switch(navbar){
 					case 1:
 						$(".left img").attr("src","images/icon-comments@2x.png");
@@ -323,6 +325,7 @@ html
 					return false;
 				}
 				var content = $("input").val();
+				alert(content);
 				var reg = new RegExp("^[ ]+$");
 				if(reg.test(content)||content==""){
 					alert("发送的内容不能为空或全为空格");
@@ -342,37 +345,36 @@ html
 						success:function(data){
 							if($(".empty").length>0){
 								getComment();
-							}else{
-								$("#new").next().attr("style","");
-								var HTML = 
-								'<div class="comment" style="border:none;">'+
-									'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
-									'<div class="comment_main">'+
-										'<p class="comment_user">'+data.nickname+'</p>'+
-										'<p class="comment_time">'+data.createdAt+'</p>';
-								if(atUserId!=""){
-									HTML += "<p class=comment_content><span>@ "+$("input").attr("data-at-name")+" : </span>"+data.content+"</p>";
-								}else{
-									HTML += '<p class="comment_content">'+data.content+'</p>';
-								}
-										
-								HTML +=	'</div>'+
-											'<div class="comment_like">'+
-												'<span>'+data.likes+'</span>'+
-												'<a href="#">'+
-													'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
-								$("#new").after(HTML);
 							}
+							$("#new").next().attr("style","");
+							var HTML = 
+							'<div class="comment" style="border:none;">'+
+								'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
+								'<div class="comment_main">'+
+									'<p class="comment_user">'+data.nickname+'</p>'+
+									'<p class="comment_time">'+data.createdAt+'</p>';
+							if(atUserId!=""){
+								HTML += "<p class=comment_content><span>@ "+$("input").attr("data-at-name")+" : </span>"+data.content+"</p>";
+							}else{
+								HTML += '<p class="comment_content">'+data.content+'</p>';
+							}
+									
+							HTML +=	'</div>'+
+										'<div class="comment_like">'+
+											'<span>'+data.likes+'</span>'+
+											'<a href="#">'+
+												'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
+							$("#new").after(HTML);
+							$("input").val("");
+							$("input").attr("data-at","");
+							$("input").attr("placeholder","");
+							return true;
 							
 						},
 						error:function(error){
 						}
 					});
-				//清除内容
-				$("input").val("");
-				$("input").attr("data-at","");
-				$("input").attr("placeholder","");
-				return true;
+				
 			};
 			function isScrollBottom(obj){
 				if(obj.scrollTop+obj.clientHeight==obj.scrollHeight){

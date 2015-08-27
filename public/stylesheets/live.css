@@ -215,10 +215,14 @@ body{
 .content{
 	width: 100%;
 	position: absolute;
-	top: 425px;
-	bottom: 88px;
+	top: 415px;
+	bottom: 0px;
 	overflow-y: scroll;
 	overflow-x: hidden;
+}
+.content .blank{
+	width: 100%;
+	height: 88px;
 }
 .content .empty{
 	width: 270px;
@@ -320,17 +324,17 @@ body{
 	vertical-align: middle;
 
 }
-.content .edit{
+.edit{
 	width: 100%;
 	height: 88px;
-	position: fixed;
+	position: absolute;
 	bottom: 0px;
 	left: 0px;
 	background-color: #FFFFFF;
 	text-align: left;
 
 }
-.content .edit input{
+.edit input{
 	width: 80%;
 	height: 64px;
 	margin-top: 12px;
@@ -342,7 +346,7 @@ body{
 	font-size: 25px;
 	margin-left: 24px;
 }
-.content .edit a{
+.edit a{
 	text-decoration: none;
 	background-color: #FFFFFF;
 	width: 16.5%;

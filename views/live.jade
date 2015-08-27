@@ -73,14 +73,16 @@ html
 								$(".content").attr("style","background-color:#F0F0F0;");
 								$(".content .container").append("<div class=empty style=background-image:url('images/empty-comment@2x.png')></div>");
 							}else if(comment_number>=1000){
-								$(".content .container").append("<p class=comment_number>吐槽数: "+comment_number/1000+"K</p>");
+								$(".content .container").append("<div class='blank'></div>");
+								$(".content .container .blank").before("<p class=comment_number>吐槽数: "+comment_number/1000+"K</p>");
 								hasComment=true;
 							}else{
-								$(".content .container").append("<p class=comment_number>吐槽数: "+comment_number+"</p>");
+								$(".content .container").append("<div class='blank'></div>");
+								$(".content .container .blank").before("<p class=comment_number>吐槽数: "+comment_number+"</p>");
 								hasComment=true;
 							}
 							if(hasComment){
-								$(".content .container").append("<div class=comment_type id=hot><div class=line></div><div class=hot><p>热门吐槽</p></div><div class=line></div></div>");
+								$(".content .container .blank").before("<div class=comment_type id=hot><div class=line></div><div class=hot><p>热门吐槽</p></div><div class=line></div></div>");
 								for(var i = 0 ; i < hotComments.length ; i++){
 									var HTML = 	"<img class=user_img src="+hotComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+hotComments[i].user.objectId+"\",\""+hotComments[i].user.nickname+"\")>"+
 													"<div class=comment_main>"+
@@ -103,9 +105,9 @@ html
 									}else{
 										HTML = "<div class=comment>"+HTML;
 									}
-									$(".content .container").append(HTML);
+									$(".content .container .blank").before(HTML);
 								}
-								$(".content .container").append("<div class=comment_type id=new><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>");
+								$(".content .container .blank").before("<div class=comment_type id=new><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>");
 								for(var i = 0 ; i < newComments.length ; i++){
 									var HTML = 	"<img class=user_img src="+newComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+newComments[i].user.objectId+"\",\""+newComments[i].user.nickname+"\")>"+
 													"<div class=comment_main>"+
@@ -131,10 +133,10 @@ html
 										}
 										HTML = "<div class=comment>"+HTML;
 									}
-									$(".content .container").append(HTML);
+									$(".content .container .blank").before(HTML);
 								}
 							}
-							$(".content .container").append("<div class=edit><input type=text data-at='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
+							$("body").append("<div class=edit><input type=text data-at='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
 						}
 					});
 			}
@@ -251,6 +253,7 @@ html
 
 			function choose(i){
 				$(".content .container").empty();
+				$(".edit").remove();
 				switch(navbar){
 					case 1:
 						$(".left img").attr("src","images/icon-comments@2x.png");
@@ -387,7 +390,7 @@ html
 										if(i==newComments.length-1){
 											oldTime=newComments[i].comment.createdAt;
 										}
-										$(".content .container").append(HTML);
+										$(".content .container .blank").before(HTML);
 									}
 								}
 								isReady=true;

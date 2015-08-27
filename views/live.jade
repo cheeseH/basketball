@@ -307,7 +307,7 @@ html
 				}
 				var content = $("input").val();
 				var reg = new RegExp("^[ ]+$");
-				if(reg.test(content)){
+				if(reg.test(content)||content==""){
 					alert("发送的内容不能为空或全为空格");
 					$("input").val("");
 					return false;

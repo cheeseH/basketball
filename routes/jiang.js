@@ -252,7 +252,7 @@ router.get('/getOldComment',function(req,res,next){
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
 	console.log(commentId);
-	var user = new req.AV.user;
+	var user = req.AV.user;
 	console.log(user);
 	var commentLike = new CommentLike();
 	var comment = new Comment();

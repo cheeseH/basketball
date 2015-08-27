@@ -338,25 +338,30 @@ html
 						url:url,
 						dataType: "json",
 						success:function(data){
-							$("#new").next().attr("style","");
-							var HTML = 
-							'<div class="comment" style="border:none;">'+
-								'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
-								'<div class="comment_main">'+
-									'<p class="comment_user">'+data.nickname+'</p>'+
-									'<p class="comment_time">'+data.createdAt+'</p>';
-							if(atUserId!=""){
-								HTML += "<p class=comment_content><span>@ "+$("input").attr("data-at-name")+" : </span>"+data.content+"</p>";
+							if($(".empty")){
+								getComment();
 							}else{
-								HTML += '<p class="comment_content">'+data.content+'</p>';
+								$("#new").next().attr("style","");
+								var HTML = 
+								'<div class="comment" style="border:none;">'+
+									'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
+									'<div class="comment_main">'+
+										'<p class="comment_user">'+data.nickname+'</p>'+
+										'<p class="comment_time">'+data.createdAt+'</p>';
+								if(atUserId!=""){
+									HTML += "<p class=comment_content><span>@ "+$("input").attr("data-at-name")+" : </span>"+data.content+"</p>";
+								}else{
+									HTML += '<p class="comment_content">'+data.content+'</p>';
+								}
+										
+								HTML +=	'</div>'+
+											'<div class="comment_like">'+
+												'<span>'+data.likes+'</span>'+
+												'<a href="#">'+
+													'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
+								$("#new").after(HTML);
 							}
-									
-							HTML +=	'</div>'+
-										'<div class="comment_like">'+
-											'<span>'+data.likes+'</span>'+
-											'<a href="#">'+
-												'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
-							$("#new").after(HTML);
+							
 						},
 						error:function(error){
 						}

@@ -252,27 +252,47 @@ router.get('/getOldComment',function(req,res,next){
 
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
-	console.log(commentId);
 	var user = req.AV.user;
-	console.log(user);
-	var commentLike = new CommentLike();
 	var comment = new Comment();
 	comment.id = commentId;
-	commentLike.set("commentId",comment);
-	commentLike.set("userId",user);
-	console.log()
-	commentLike.save(null,{
-		success:function(commentlike){
-			console.log(commentlike);
-			res.json({msg:"success"});
-			res.end();
+	var query = new AV.Query(CommentLike);
+	query.equalTo("commentId",comment);
+	query.equalTo("userId",user);
+	query.find({
+		success:function(data){
+			if(data.length<=0){
+				var commentLike = new CommentLike();
+				commentLike.set("commentId",comment);
+				commentLike.set("userId",user);
+				commentLike.save(null,{
+					success:function(commentlike){
+						res.json({msg:"success"});
+						res.end();
+					},
+					error:function(object,error){
+						res.json({msg:"error"});
+						res.end();
+					}
+				});
+			}else{
+				data[0].destroy({
+					success:function(object){
+						res.json({msg:"success"});
+						res.end();
+					},
+					error:function(object,error){
+						res.json({msg:"error"});
+						res.end();
+					}
+				})
+			}
 		},
-		error:function(object,error){
-			console.log(error);
+		error:function(data,error){
 			res.json({msg:"error"});
 			res.end();
 		}
-	});
+	})
+	
 });
 
 router.get('/getReport',function(req,res,next){

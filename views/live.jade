@@ -145,7 +145,7 @@ html
 									$(".content .container .blank").before(HTML);
 								}
 							}
-							$("body").append("<div class=edit><input type=text data-at='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
+							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
 						}
 					});
 			}
@@ -303,6 +303,7 @@ html
 
 			function commentAt(userId,nickname){
 				$("input").attr("data-at",userId);
+				$("input").attr("data-at-name",nickname);
 				$("input").attr("placeholder","@"+nickname+":");
 				$("input").focus();
 			};
@@ -343,13 +344,18 @@ html
 								'<img class="user_img" src=\"'+data.avatorUrl+'\" alt="" onclick=commentAt(\"'+data.userId+'\",\"'+data.nickname+'\")>'+
 								'<div class="comment_main">'+
 									'<p class="comment_user">'+data.nickname+'</p>'+
-									'<p class="comment_time">'+data.createdAt+'</p>'+
-									'<p class="comment_content">'+data.content+'</p>'+
-								'</div>'+
-								'<div class="comment_like">'+
-									'<span>'+data.likes+'</span>'+
-									'<a href="#">'+
-										'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
+									'<p class="comment_time">'+data.createdAt+'</p>';
+							if(atUserId!=""){
+								HTML += "<p class=comment_content><span>@ "+$("input").attr("data-at-name")+" : </span>"+data.content+"</p>";
+							}else{
+								HTML += '<p class="comment_content">'+data.content+'</p>';
+							}
+									
+							HTML +=	'</div>'+
+										'<div class="comment_like">'+
+											'<span>'+data.likes+'</span>'+
+											'<a href="#">'+
+												'<img src="images/icon-like@2x.png"  alt="" onclick=commentLike(this,\"'+data.id+'\")>';
 							$("#new").after(HTML);
 						},
 						error:function(error){

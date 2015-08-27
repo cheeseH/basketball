@@ -278,6 +278,9 @@ body{
 	margin-bottom: 25px;
 	margin-top: 10px;
 }
+.content .comment_content span{
+	color: #404040;
+}
 .content .comment_like{
 	display: inline-block;
 	float: right;

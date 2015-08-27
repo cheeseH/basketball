@@ -339,6 +339,7 @@ html
 						dataType: "json",
 						success:function(data){
 							if($(".empty")){
+								$(".content .container").empty();
 								getComment();
 							}else{
 								$("#new").next().attr("style","");

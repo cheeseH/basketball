@@ -409,7 +409,6 @@ html
 						url:url,
 						success:function(data){
 							if(src==commentImg[0]){
-								alert(commentImg[1]);
 								$(t).attr("src",commentImg[1]);
 								var n = parseInt($(t).parent().prev().text())+1;
 								$(t).parent().prev().text(n);

@@ -401,15 +401,14 @@ html
 					window.location.href=authorizeUrl;
 					return false;
 				}
-				alert(1);
 				var src = $(t).attr("src");
-				alert(src);
 				//发送到后台
 				var url = "/commentLike?commentId="+commentId;
 				$.ajax({
 						type:"GET",
 						url:url,
 						success:function(data){
+							alert(data);
 							if(src==commentImg[0]){
 								alert(commentImg[1]);
 								$(t).attr("src",commentImg[1]);

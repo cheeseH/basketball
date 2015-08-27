@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/live',urlUtil.checkWx);
+// router.get('/live',urlUtil.checkWx);
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
@@ -251,7 +251,9 @@ router.get('/getOldComment',function(req,res,next){
 
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
+	console.log(commentId);
 	var user = new req.AV.user;
+	console.log(user);
 	var commentLike = new CommentLike();
 	var comment = new Comment();
 	comment.id = commentId;

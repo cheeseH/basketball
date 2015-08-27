@@ -299,8 +299,10 @@ html
 			};
 
 			function lost(){
-				$("input").attr("data-at","");
-				$("input").attr("placeholder","");
+				if($("input").val()==""){
+					$("input").attr("data-at","");
+					$("input").attr("placeholder","");
+				}
 			}
 
 			function send(){

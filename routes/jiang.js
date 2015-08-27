@@ -9,6 +9,7 @@ var Comment = AV.Object.extend("Comment");
 var urlUtil = require('../control/urlUtil');
 var Report = AV.Object.extend("Report");
 var Team = AV.Object.extend("Team");
+var CommentLike = AV.Object.extend("CommentLike");
 
 var router = express.Router();
 var Sapi_Ticket = "";
@@ -259,6 +260,7 @@ router.get('/commentLike',function(req,res,next){
 	comment.id = commentId;
 	commentLike.set("commentId",comment);
 	commentLike.set("userId",user);
+	console.log()
 	commentLike.save(null,{
 		success:function(commentlike){
 			console.log(commentlike);
@@ -266,6 +268,7 @@ router.get('/commentLike',function(req,res,next){
 			res.end();
 		},
 		error:function(object,error){
+			console.log(error);
 			res.json({msg:"error"});
 			res.end();
 		}

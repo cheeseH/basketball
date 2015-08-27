@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-// router.get('/live',urlUtil.checkWx);
+router.get('/live',urlUtil.checkWx);
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();

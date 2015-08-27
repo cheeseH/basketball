@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/live',urlUtil.checkWx);
+// router.get('/live',urlUtil.checkWx);
 router.get('/live', function(req, res, next) {
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
@@ -191,7 +191,6 @@ router.get('/comment',function(req,res,next){
 });
 
 router.get('/getComment',function(req,res,next){
-	console.log(req.AV.user);
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
 	competitionObj.id = competitionId;
@@ -200,12 +199,11 @@ router.get('/getComment',function(req,res,next){
 	countQuery.count({
 		success:function(count){
 			var comment_number = count;
-			AV.Cloud.run("commentInit",{"competitionId":competitionId,"count":5},{
+			AV.Cloud.run("commentInit",{competitionId:competitionId,count:5},{
 				success:function(result){
-					console.log(JSON.stringify(result));
 					for(var i = 0 ; i < result.hot.length ; i++){
-						result.hot[i].comment.createdAt = format_date(result.hot[i].comment.createdAt);
-						result.recent[i].comment.createdAt = format_date(result.recent[i].comment.createdAt);
+						result.hot[i].comment.updatedAt = format_date(result.hot[i].comment.createdAt);
+						result.recent[i].comment.updatedAt = format_date(result.recent[i].comment.createdAt);
 					}
 					res.json({comment:result,comment_number:comment_number});
 					res.end();
@@ -226,6 +224,29 @@ router.get('/getComment',function(req,res,next){
 
 router.get('/getOldComment',function(req,res,next){
 	var competitionId = req.query.competitionId;
+	var oldTime = req.query.oldTime;
+	var date = new Date(oldTime);
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	var createdAt = year+"-"+(month<10?"0"+month:month)+"-"+(day<10?"0"+day:day)+" "+(hour<10?"0"+hour:hour)+":"+(minute<10?"0"+minute:minute)+":"+(second<10?"0"+second:second);
+	AV.Cloud.run("getOldComment",{"competitionId":competitionId,"count":10,"createdAt":createdAt},{
+		success:function(result){
+			for(var i = 0 ; i < result.length ; i++){
+				result[i].comment.updatedAt = format_date(result[i].comment.createdAt);
+				result[i].comment.updatedAt = format_date(result[i].comment.createdAt);
+			}
+			res.json({comment:result});
+			res.end();
+		},
+		error:function(error){
+			res.json({error:error});
+			res.end();
+		}
+	})
 });
 
 router.get('/commentLike',function(req,res,next){

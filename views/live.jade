@@ -44,7 +44,7 @@ html
 		script(type="text/javascript").
 			var isComment = true;
 			var weChatUrl = "\"/live\"";
-			
+			var oldTime;
 			var conversationId = "#{conversationId}";
 			var navbar = 1;
 			var userId = "#{userId}";
@@ -85,16 +85,16 @@ html
 									var HTML = 	"<img class=user_img src="+hotComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+hotComments[i].user.objectId+"\",\""+hotComments[i].user.nickname+"\")>"+
 													"<div class=comment_main>"+
 														"<p class=comment_user>"+hotComments[i].user.nickname+"</p>"+
-														"<p class=comment_time>"+hotComments[i].comment.createdAt+"</p>"+
+														"<p class=comment_time>"+hotComments[i].comment.updatedAt+"</p>"+
 														"<p class=comment_content>"+hotComments[i].comment.content+"</p>"+
 													"</div>"+
 													"<div class=comment_like>"+
 														"<span>"+hotComments[i].comment.likes+"</span>"+
 														"<a href='#'>";
 									if(hotComments[i].likes){
-										HTML += "<img src='images/icon-like-active@2x.png' alt='' onclick='return commentLike(this,\""+hotComments[i].comment.objectId+"\")'";
+										HTML += "<img src='images/icon-like-active@2x.png' alt='' onclick='return commentLike(this,\""+hotComments[i].comment.objectId+"\")'/>";
 									}else{
-										HTML += "<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+hotComments[i].comment.objectId+"\")'";
+										HTML += "<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+hotComments[i].comment.objectId+"\")'/>";
 									}
 									HTML +="</a></div></div>";
 													
@@ -105,26 +105,30 @@ html
 									}
 									$(".content .container").append(HTML);
 								}
-								$(".content .container").append("<div class=comment_type id=new><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>")
+								$(".content .container").append("<div class=comment_type id=new><div class=line></div><div class=hot><p>最新吐槽</p></div><div class=line></div></div>");
 								for(var i = 0 ; i < newComments.length ; i++){
-									var HTML = "<img class=user_img src="+newComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+newComments[i].user.objectId+"\",\""+newComments[i].user.nickname+"\")>"+
-														"<div class=comment_main>"+
-															"<p class=comment_user>"+newComments[i].user.nickname+"</p>"+
-															"<p class=comment_time>"+newComments[i].comment.createdAt+"</p>"+
-															"<p class=comment_content>"+newComments[i].comment.content+"</p>"+
-														"</div>"+
-														"<div class=comment_like>"+
-															"<span>"+newComments[i].comment.likes+"</span>"+
-															"<a href='#'>";
+									var HTML = 	"<img class=user_img src="+newComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+newComments[i].user.objectId+"\",\""+newComments[i].user.nickname+"\")>"+
+													"<div class=comment_main>"+
+														"<p class=comment_user>"+newComments[i].user.nickname+"</p>"+
+														"<p class=comment_time>"+newComments[i].comment.updatedAt+"</p>"+
+														"<p class=comment_content>"+newComments[i].comment.content+"</p>"+
+													"</div>"+
+													"<div class=comment_like>"+
+														"<span>"+newComments[i].comment.likes+"</span>"+
+														"<a href='#'>";
 									if(newComments[i].likes){
-										HTML += "<img src='images/icon-like-active@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'";
+										HTML += "<img src='images/icon-like-active@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'/>";
 									}else{
-										HTML += "<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'";
+										HTML += "<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'/>";
 									}
 									HTML +="</a></div></div>";
+													
 									if(i==0){
-										HTML = "<div class=comment style='border:none;'>"+HTML;
+										HTML = "<div class=comment style=border:none;>"+HTML;
 									}else{
+										if(i==newComments.length-1){
+											oldTime = newComments[i].comment.createdAt;
+										}
 										HTML = "<div class=comment>"+HTML;
 									}
 									$(".content .container").append(HTML);
@@ -349,42 +353,77 @@ html
 				}
 				return false;
 			}
+			var isReady =true;
 			function scrollBottom(obj){
-				if(isComment&&isScrollBottom(obj)){
-					var url = "/getOldComment"
+				if(isReady&&isComment&&isScrollBottom(obj)){
+					isReady=false;
+					var url = "/getOldComment?competitionId="+competitionId+"&oldTime="+oldTime;
+					$.ajax({
+							type:"GET",
+							url:url,
+							dataType:"json",
+							success:function(data){
+								var newComments = data.comment;
+								if(newComments.length<=0){
+									alert("没有更多评论了");
+								}else{
+									for(var i = 0 ; i < newComments.length ; i++){
+										var HTML = 	"<div class=comment>"+
+														"<img class=user_img src="+newComments[i].user.avatorUrl+" alt='' onclick=commentAt(\""+newComments[i].user.objectId+"\",\""+newComments[i].user.nickname+"\")>"+
+														"<div class=comment_main>"+
+															"<p class=comment_user>"+newComments[i].user.nickname+"</p>"+
+															"<p class=comment_time>"+newComments[i].comment.updatedAt+"</p>"+
+															"<p class=comment_content>"+newComments[i].comment.content+"</p>"+
+														"</div>"+
+														"<div class=comment_like>"+
+															"<span>"+newComments[i].comment.likes+"</span>"+
+															"<a href='#'>";
+										if(newComments[i].likes){
+											HTML += "<img src='images/icon-like-active@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'/>";
+										}else{
+											HTML += "<img src='images/icon-like@2x.png' alt='' onclick='return commentLike(this,\""+newComments[i].comment.objectId+"\")'/>";
+										}
+										HTML +="</a></div></div>";
+										if(i==newComments.length-1){
+											oldTime=newComments[i].comment.createdAt;
+										}
+										$(".content .container").append(HTML);
+									}
+								}
+								isReady=true;
+							}
+						});
 				}
 			}
+
 			function commentLike(t,commentId){
 				if(userId==""){
 					window.location.href=authorizeUrl;
 					return false;
 				}
+				alert(1);
 				var src = $(t).attr("src");
-				if(src==commentImg[0]){
-					$(t).attr("src",commentImg[1]);
-					var n = parseInt($(t).parent().prev().text())+1;
-					$(t).parent().prev().text(n);
-					$(t).parent().prev().css("color","#CB1A48");
-				}else{
-					$(t).attr("src",commentImg[0]);
-					var n = parseInt($(t).parent().prev().text())-1;
-					$(t).parent().prev().text(n);
-					$(t).parent().prev().css("color","#C9CFD8");
-				}
+				alert(src);
 				//发送到后台
 				var url = "/commentLike?commentId="+commentId;
 				$.ajax({
 						type:"GET",
 						url:url,
 						success:function(data){
-							if(data.msg=="error"){
-								$(t).attr("src",src);
+							if(src==commentImg[0]){
+								alert(commentImg[1]);
+								$(t).attr("src",commentImg[1]);
+								var n = parseInt($(t).parent().prev().text())+1;
+								$(t).parent().prev().text(n);
+								$(t).parent().prev().css("color","#CB1A48");
+							}else{
+								$(t).attr("src",commentImg[0]);
+								var n = parseInt($(t).parent().prev().text())-1;
+								$(t).parent().prev().text(n);
+								$(t).parent().prev().css("color","#C9CFD8");
 							}
-						},
-						error:function(error){
-							$(t).attr("src",src);		
 						}
-					})
+					});
 				return true;
 			};
 

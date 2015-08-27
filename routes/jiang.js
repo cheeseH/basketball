@@ -261,6 +261,7 @@ router.get('/commentLike',function(req,res,next){
 	commentLike.set("userId",user);
 	commentLike.save(null,{
 		success:function(commentlike){
+			console.log(commentlike);
 			res.json({msg:"success"});
 			res.end();
 		},

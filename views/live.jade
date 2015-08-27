@@ -388,7 +388,7 @@ html
 															"<p class=comment_user>"+newComments[i].user.nickname+"</p>"+
 															"<p class=comment_time>"+newComments[i].comment.updatedAt+"</p>";
 										if(newComments[i].atUser!=""){
-											HTML += "<p class=comment_content><span>@ "+newComments[i].atUser.nickname+" : </span>"+hotComments[i].comment.content+"</p>";
+											HTML += "<p class=comment_content><span>@ "+newComments[i].atUser.nickname+" : </span>"+newComments[i].comment.content+"</p>";
 										}else{
 											HTML += "<p class=comment_content>"+newComments[i].comment.content+"</p>";
 										}

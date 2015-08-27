@@ -67,17 +67,14 @@ if (!firstFlag) {
         });
       } else {
         // 如果服务器端不存在这个 conversation
-        alert('服务器不存在这个 conversation');
       }
     });
   });
 
   // 监听服务情况
   rt.on('reuse', function() {
-    alert('服务器正在重连，请耐心等待。。。');
   });
 
   // 监听错误
   rt.on('error', function() {
-    alert('连接遇到错误。。。');
   });

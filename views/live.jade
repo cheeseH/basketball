@@ -325,7 +325,6 @@ html
 					return false;
 				}
 				var content = $("input").val();
-				alert(content);
 				var reg = new RegExp("^[ ]+$");
 				if(reg.test(content)||content==""){
 					alert("发送的内容不能为空或全为空格");
@@ -394,7 +393,7 @@ html
 							success:function(data){
 								var newComments = data.comment;
 								if(newComments.length<=0){
-									alert("没有更多评论了");
+									return;
 								}else{
 									for(var i = 0 ; i < newComments.length ; i++){
 										var HTML = 	"<div class=comment>"+

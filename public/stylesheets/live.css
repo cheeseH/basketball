@@ -162,9 +162,11 @@ body{
 	border-width: 5px;
 	border-radius: 30px;
 	text-align: center;
+	position: relative;
+	left: 10px;
 }
 .award_number{
-	font-size: 22px;
+	font-size: 26px;
 	margin-top: 16px;
 	display: inline-block;
 }
@@ -344,11 +346,12 @@ body{
 	margin-top: 12px;
 	margin-bottom: 12px;
 	display: inline-block;
-	background-color: #CCCCCC;
+	background-color: #F0F0F0;
 	border-radius: 20px;
 	outline: none;
 	font-size: 25px;
 	margin-left: 24px;
+	padding-left: 8px;
 }
 .edit a{
 	text-decoration: none;

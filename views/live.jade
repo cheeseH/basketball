@@ -31,7 +31,7 @@ html
 					link: "http://movie.douban.com/subject/25785114/",
 					imgUrl: "https://upload.wikimedia.org/wikipedia/zh/thumb/5/53/Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg/400px-Utah_Jazz_logo%2C_%282010_%27new_look%27%29.svg.png",
 					success: function(res){
-						
+						refresh();
 					},
 					fail:function(res){
 						//- alert(JSON.stringify(res));
@@ -197,44 +197,91 @@ html
 								var HTML = "<div class=statistics_type>"+
 												"<p>得分统计</p>"+
 											"</div>";
-								HTML += statisticsTable(statistics.statistics);
-
-								HTML += "<div class=statistics_type>"+
+								HTML += statisticsTable(statistics.statistics,"score");
+								$(".content .container").append(HTML);
+								for(var i=1;i<ids.length;i++){
+									for(var j=0;j<ids[i].length;j++){
+										$(document.getElementById("score"+ids[i][j])).css("color","#F6B139");
+									}
+								}
+								ids = new Array();
+								HTML = "<div class=statistics_type>"+
 												"<p>#{teamA}球员数据</p>"+
 											"</div>";
-								HTML += statisticsTable(statistics.playerA);
-								HTML += "<div class=statistics_type>"+
+								HTML += statisticsTable(statistics.playerA,"playerA");
+								$(".content .container").append(HTML);
+								for(var i=1;i<ids.length;i++){
+									for(var j=0;j<ids[i].length;j++){
+										$(document.getElementById("playerA"+ids[i][j])).css("color","#F6B139");
+									}
+								}
+								ids = new Array();
+								HTML = "<div class=statistics_type>"+
 												"<p>#{teamB}球员数据</p>"+
 											"</div>";
-								HTML += statisticsTable(statistics.playerB);
+								HTML += statisticsTable(statistics.playerB,"playerB");
 								$(".content .container").append(HTML);
+								for(var i=1;i<ids.length;i++){
+									for(var j=0;j<ids[i].length;j++){
+										$(document.getElementById("playerB"+ids[i][j])).css("color","#F6B139");
+									}
+								}
+								ids = new Array();
 							}
 						}
 					})
 			}
-			function statisticsTable(statistics){
+			var highest = new Array();
+			var ids = new Array();
+			function statisticsTable(statistics,type){
 				var HTML = "<table class=statistics cellpadding=0 cellspacing=0><thead>";
 				for(var i=0;i<statistics.length;i++){
 					for(var j=0;j<statistics[i].length;j++){
 						if(i==0){
+							highest[j] = 0;
 							if(j==statistics[i].length-1){
+								ids[j] = new Array();
 								HTML += "<th>"+statistics[i][j]+"</th></tr></thead><tbody>";
 							}else if(j==0){
 								HTML += "<tr><th>"+statistics[i][j]+"</th>";
 							}else{
+								ids[j] = new Array();
 								HTML += "<th>"+statistics[i][j]+"</th>";
 							}
 						}else{
 							if(j==0){
 								HTML += "<tr><td style='border-top:none;'>"+statistics[i][j]+"</td>";
 							}else if(j==statistics[i].length-1){
-								HTML += "<td style='border-top:none;'>"+statistics[i][j]+"</td></tr>"
+								var temp = statistics[i][j].split("-")[0];
+								temp = statistics[i][j].split("%")[0];
+								temp = parseInt(temp);
+								
+								if(highest[j]<temp){
+									ids[j] = new Array();
+									highest[j]=temp;
+									ids[j][0] = i+""+j;
+								}else if(highest[j]==temp){
+									ids[j][ids[j].length] = i+""+j;
+								}
+								
+								HTML += "<td style='border-top:none;' id="+type+i+''+j+">"+statistics[i][j]+"</td></tr>"
 							}else{
-								HTML += "<td style='border-top:none;'>"+statistics[i][j]+"</td>";
+								var temp = statistics[i][j].split("-")[0];
+								temp = statistics[i][j].split("%")[0];
+								temp = parseInt(temp);
+								if(highest[j]<temp){
+									ids[j] = new Array();
+									highest[j]=temp;
+									ids[j][0] = i+""+j;
+								}else if(highest[j]==temp){
+									ids[j][ids[j].length] = i+""+j;
+								}
+								HTML += "<td style='border-top:none;' id="+type+i+''+j+">"+statistics[i][j]+"</td>";
 							}
 						}
 					}
 				}
+
 				HTML += "</tbody></table>";
 				return HTML;
 			};
@@ -504,7 +551,7 @@ html
 					url:url,
 					dataType:"json",
 					success:function(data){
-
+						refresh();
 					}
 				});
 				return true;

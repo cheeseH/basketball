@@ -25,6 +25,7 @@ html
 								"<div class=report_content>"+
 									$("#content").val()+
 								"</div>"+
+								"<div class='blank'></div>"
 							"</div>";
 				var url = "/report?content="+HTML+"&title="+$("#title").val()+"&author="+$("#author").val()+"&competitionId="+"#{competitionId}";
 				$.ajax({

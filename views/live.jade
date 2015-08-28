@@ -147,7 +147,7 @@ html
 									$(".content .container .blank").before(HTML);
 								}
 							}
-							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
+							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><button onclick='return send()' href='#'>发送</button></div>");
 						}
 					});
 			}
@@ -234,7 +234,12 @@ html
 			var highest = new Array();
 			var ids = new Array();
 			function statisticsTable(statistics,type){
-				var HTML = "<table class=statistics cellpadding=0 cellspacing=0><thead>";
+				var HTML;
+				if(type=="playerB"){
+					HTML = "<table class=statistics cellpadding=0 cellspacing=0 style='margin-bottom:20px;'><thead>";
+				}else{
+					HTML = "<table class=statistics cellpadding=0 cellspacing=0><thead>";
+				}
 				for(var i=0;i<statistics.length;i++){
 					for(var j=0;j<statistics[i].length;j++){
 						if(i==0){

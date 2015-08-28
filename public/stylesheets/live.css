@@ -353,7 +353,7 @@ body{
 	margin-left: 24px;
 	padding-left: 8px;
 }
-.edit a{
+.edit button{
 	text-decoration: none;
 	background-color: #FFFFFF;
 	width: 16.5%;

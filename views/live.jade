@@ -147,7 +147,7 @@ html
 									$(".content .container .blank").before(HTML);
 								}
 							}
-							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><button onclick='return send()' href='#'>发送</button></div>");
+							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
 						}
 					});
 			}
@@ -397,6 +397,7 @@ html
 				if(atUserId != ""){
 					url = url + "&atUserId=" + atUserId;
 				}
+				alert(1);
 				$.ajax({
 						type:"POST",
 						url:url,

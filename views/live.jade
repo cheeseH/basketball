@@ -394,10 +394,9 @@ html
 				//发送内容
 				var url = "/comment";
 				var atUserId = $("input").attr("data-at");
-				if(atUserId != ""){
-					url = url + "&atUserId=" + atUserId;
-				}
-				alert(1);
+				alert(competitionId);
+				alert(content);
+				alert(atUser);
 				$.ajax({
 						type:"POST",
 						url:url,

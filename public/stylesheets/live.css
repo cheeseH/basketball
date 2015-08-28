@@ -402,3 +402,8 @@ body{
 	color: #404040;
 	font-size: 22px;
 }
+.content .statistics_blank{
+	width:100%;
+	height: 20px;
+	background-color: #F0F0F0;
+}

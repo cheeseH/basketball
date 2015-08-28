@@ -152,9 +152,17 @@ html
 					});
 			}
 
+			var report="";
 			function getReport(){
 				$(".edit").remove();
 				$(".content .container").empty();
+				if(report!=""){
+					var content = report.content;
+					$(".content .container").append(content);
+					$(".report_content img").attr("width","");
+					$(".report_content img").attr("height","");
+					return;
+				}
 				var url = "/getReport?competitionId="+competitionId;
 				$.ajax({
 						type:"GET",
@@ -167,7 +175,7 @@ html
 								$(".content").attr("style","background-color:#F0F0F0;");
 								$(".content .container").append("<div class=empty style=background-image:url('images/empty-report@2x.png')></div>");
 							}else{
-								var report = data.report;
+								report = data.report;
 								var content = report.content;
 								$(".content .container").append(content);
 								$(".report_content img").attr("width","");
@@ -176,10 +184,14 @@ html
 						}
 					});
 			}
-
+			var statisticsHTML ="";
 			function getStatistics(){
 				$(".edit").remove();
 				$(".content .container").empty();
+				if(statisticsHTML!=""){
+					$(".content .container").append(statisticsHTML);
+					return;
+				}
 				var url = "/getStatistics?competitionId="+competitionId;
 				$.ajax({
 						type:"GET",
@@ -227,6 +239,7 @@ html
 									}
 								}
 								ids = new Array();
+								statisticsHTML = $(".content .container").html();
 							}
 						}
 					})

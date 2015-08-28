@@ -167,8 +167,8 @@ body{
 }
 .award_number{
 	font-size: 26px;
-	margin-top: 16px;
 	display: inline-block;
+	line-height: 50px;
 }
 .award a{
 	display: inline-block;

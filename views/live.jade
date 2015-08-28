@@ -392,15 +392,16 @@ html
 					return false;
 				}
 				//发送内容
-				var url = "/comment?competitionId="+competitionId+"&content="+content;
+				var url = "/comment";
 				var atUserId = $("input").attr("data-at");
 				if(atUserId != ""){
 					url = url + "&atUserId=" + atUserId;
 				}
 				$.ajax({
-						type:"GET",
+						type:"POST",
 						url:url,
 						dataType: "json",
+						data:{competitionId:competitionId,content:content,atUser:atUser}
 						success:function(data){
 							if($(".empty").length>0){
 								getComment();

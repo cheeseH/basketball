@@ -148,17 +148,17 @@ router.get('/live', function(req, res, next) {
 });
 
 router.get('/comment',function(req,res,next){
-	var content = req.query.content;
-	var competitionId = req.query.competitionId;
+	var content = req.body.content;
+	var competitionId = req.body.competitionId;
 	var userId = req.AV.user.id;
 	var comment = new Comment();
 	var user = new User();
 	user.id = userId;
 	var competition = new Competition();
 	competition.id = competitionId;
-	if(req.query.atUserId){
+	if(req.body.atUserId!=""){
 		var atUser = new User();
-		atUser.id = req.query.atUserId;
+		atUser.id = req.body.atUserId;
 		comment.set("atUser",atUser);
 	}
 	comment.set("userId",user);
@@ -318,11 +318,11 @@ router.get('/getReport',function(req,res,next){
 
 });
 
-router.get("/report",function(req,res,next){
-	var competitionId = req.query.competitionId;
-	var content = req.query.content;
-	var author = req.query.author;
-	var title = req.query.title;
+router.post("/report",function(req,res,next){
+	var competitionId = req.body.competitionId;
+	var content = req.body.content;
+	var author = req.body.author;
+	var title = req.body.title;
 	var report = new Report();
 	report.set("title",title);
 	report.set("author",author);
@@ -384,9 +384,9 @@ router.get("/getStatistics",function(req,res,next){
 	});
 });
 
-router.get("/statistics",function(req,res,next){
-	var competitionId = req.query.competitionId;
-	var statistics = req.query.statistics;
+router.post("/statistics",function(req,res,next){
+	var competitionId = req.body.competitionId;
+	var statistics = req.body.statistics;
 	var query = new AV.Query(Competition);
 	query.equalTo("objectId",competitionId);
 	query.find({

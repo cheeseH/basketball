@@ -122,12 +122,12 @@ body{
 .enjoy_one{
 	display: inline-block;
 	
-	margin-left: 8%;
+	margin-left: 10%;
 	float: left;
 }
 .enjoy_two{
 	display: inline-block;
-	margin-right: 8%;
+	margin-right: 10%;
 	float: right;
 }
 .enjoy_number{
@@ -160,7 +160,7 @@ body{
 	vertical-align: middle;
 	background-color: #FF9900;
 	border-width: 5px;
-	border-radius: 15px;
+	border-radius: 30px;
 	text-align: center;
 }
 .award_number{
@@ -277,6 +277,7 @@ body{
 	color: #808080;
 	margin-bottom: 25px;
 	margin-top: 10px;
+	line-height: 1.5;
 }
 .content .comment_content span{
 	color: #404040;

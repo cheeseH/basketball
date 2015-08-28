@@ -391,17 +391,20 @@ html
 					$("input").val("");
 					return false;
 				}
+				if(content.length>140){
+					alert("发送内容不能超过140个字符");
+					return false;
+				}
 				//发送内容
-				var url = "/comment";
+				var url = "/comment?competitionId="+competitionId+"&content="+content;
 				var atUserId = $("input").attr("data-at");
-				alert(competitionId);
-				alert(content);
-				alert(atUser);
+				if(atUserId!=""){
+					url+="&atUserId"+atUserId;
+				}
 				$.ajax({
-						type:"POST",
+						type:"GET",
 						url:url,
 						dataType: "json",
-						data:{competitionId:competitionId,content:content,atUser:atUser},
 						success:function(data){
 							if($(".empty").length>0){
 								getComment();

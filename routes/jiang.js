@@ -148,8 +148,8 @@ router.get('/live', function(req, res, next) {
 });
 
 router.get('/comment',function(req,res,next){
-	var content = req.body.content;
-	var competitionId = req.body.competitionId;
+	var content = req.query.content;
+	var competitionId = req.query.competitionId;
 	console.log(competitionId);
 	var userId = req.AV.user.id;
 	var comment = new Comment();
@@ -157,9 +157,9 @@ router.get('/comment',function(req,res,next){
 	user.id = userId;
 	var competition = new Competition();
 	competition.id = competitionId;
-	if(req.body.atUserId!=""){
+	if(req.query.atUserId){
 		var atUser = new User();
-		atUser.id = req.body.atUserId;
+		atUser.id = req.query.atUserId;
 		comment.set("atUser",atUser);
 	}
 	comment.set("userId",user);

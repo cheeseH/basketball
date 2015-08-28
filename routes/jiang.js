@@ -150,7 +150,6 @@ router.get('/live', function(req, res, next) {
 router.get('/comment',function(req,res,next){
 	var content = req.query.content;
 	var competitionId = req.query.competitionId;
-	console.log(competitionId);
 	var userId = req.AV.user.id;
 	var comment = new Comment();
 	var user = new User();

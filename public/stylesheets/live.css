@@ -122,12 +122,12 @@ body{
 .enjoy_one{
 	display: inline-block;
 	
-	margin-left: 8%;
+	margin-left: 10%;
 	float: left;
 }
 .enjoy_two{
 	display: inline-block;
-	margin-right: 8%;
+	margin-right: 10%;
 	float: right;
 }
 .enjoy_number{
@@ -160,13 +160,15 @@ body{
 	vertical-align: middle;
 	background-color: #FF9900;
 	border-width: 5px;
-	border-radius: 15px;
+	border-radius: 30px;
 	text-align: center;
+	position: relative;
+	left: 10px;
 }
 .award_number{
-	font-size: 22px;
-	margin-top: 16px;
+	font-size: 26px;
 	display: inline-block;
+	line-height: 50px;
 }
 .award a{
 	display: inline-block;
@@ -215,10 +217,14 @@ body{
 .content{
 	width: 100%;
 	position: absolute;
-	top: 425px;
-	bottom: 88px;
+	top: 415px;
+	bottom: 0px;
 	overflow-y: scroll;
 	overflow-x: hidden;
+}
+.content .blank{
+	width: 100%;
+	height: 88px;
 }
 .content .empty{
 	width: 270px;
@@ -273,6 +279,10 @@ body{
 	color: #808080;
 	margin-bottom: 25px;
 	margin-top: 10px;
+	line-height: 1.5;
+}
+.content .comment_content span{
+	color: #404040;
 }
 .content .comment_like{
 	display: inline-block;
@@ -320,7 +330,7 @@ body{
 	vertical-align: middle;
 
 }
-.content .edit{
+.edit{
 	width: 100%;
 	height: 88px;
 	position: fixed;
@@ -330,19 +340,20 @@ body{
 	text-align: left;
 
 }
-.content .edit input{
-	width: 80%;
+.edit input{
+	width: 75%;
 	height: 64px;
 	margin-top: 12px;
 	margin-bottom: 12px;
 	display: inline-block;
-	background-color: #CCCCCC;
+	background-color: #F0F0F0;
 	border-radius: 20px;
 	outline: none;
 	font-size: 25px;
 	margin-left: 24px;
+	padding-left: 8px;
 }
-.content .edit a{
+.edit a{
 	text-decoration: none;
 	background-color: #FFFFFF;
 	width: 16.5%;
@@ -373,6 +384,7 @@ body{
 	color: #000000;
 	text-align: center;
 	table-layout: fixed;
+	background-color: #FFFFFF;
 }
 .content .statistics th{
 	line-height: 50px;
@@ -389,4 +401,9 @@ body{
 	border-color: #C9CFD8;
 	color: #404040;
 	font-size: 22px;
+}
+.content .statistics_blank{
+	width:100%;
+	height: 20px;
+	background-color: #F0F0F0;
 }

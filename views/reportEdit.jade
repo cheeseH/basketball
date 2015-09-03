@@ -25,12 +25,14 @@ html
 								"<div class=report_content>"+
 									$("#content").val()+
 								"</div>"+
+								"<div class='blank'></div>"
 							"</div>";
-				var url = "/report?content="+HTML+"&title="+$("#title").val()+"&author="+$("#author").val()+"&competitionId="+"#{competitionId}";
+				var url = "/report";
 				$.ajax({
-						type:"GET",
+						type:"POST",
 						url:url,
 						dataType:"json",
+						data:{competitionId:"#{competitionId}",content:HTML,title:$("#title").val(),author:$("#author").val()},
 						success:function(data){
 							if(data.msg=="ok"){
 								alert("插入成功");

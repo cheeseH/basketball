@@ -9,6 +9,7 @@ var Comment = AV.Object.extend("Comment");
 var urlUtil = require('../control/urlUtil');
 var Report = AV.Object.extend("Report");
 var Team = AV.Object.extend("Team");
+var CommentLike = AV.Object.extend("CommentLike");
 
 var router = express.Router();
 var Sapi_Ticket = "";
@@ -191,7 +192,6 @@ router.get('/comment',function(req,res,next){
 });
 
 router.get('/getComment',function(req,res,next){
-	console.log(req.AV.user);
 	var competitionId = req.query.competitionId;
 	var competitionObj = new Competition();
 	competitionObj.id = competitionId;
@@ -200,12 +200,11 @@ router.get('/getComment',function(req,res,next){
 	countQuery.count({
 		success:function(count){
 			var comment_number = count;
-			AV.Cloud.run("commentInit",{"competitionId":competitionId,"count":5},{
+			AV.Cloud.run("commentInit",{competitionId:competitionId,count:5},{
 				success:function(result){
-					console.log(JSON.stringify(result));
 					for(var i = 0 ; i < result.hot.length ; i++){
-						result.hot[i].comment.createdAt = format_date(result.hot[i].comment.createdAt);
-						result.recent[i].comment.createdAt = format_date(result.recent[i].comment.createdAt);
+						result.hot[i].comment.updatedAt = format_date(result.hot[i].comment.createdAt);
+						result.recent[i].comment.updatedAt = format_date(result.recent[i].comment.createdAt);
 					}
 					res.json({comment:result,comment_number:comment_number});
 					res.end();
@@ -226,26 +225,74 @@ router.get('/getComment',function(req,res,next){
 
 router.get('/getOldComment',function(req,res,next){
 	var competitionId = req.query.competitionId;
+	var oldTime = req.query.oldTime;
+	var date = new Date(oldTime);
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	var createdAt = year+"-"+(month<10?"0"+month:month)+"-"+(day<10?"0"+day:day)+" "+(hour<10?"0"+hour:hour)+":"+(minute<10?"0"+minute:minute)+":"+(second<10?"0"+second:second);
+	AV.Cloud.run("getOldComment",{"competitionId":competitionId,"count":10,"createdAt":createdAt},{
+		success:function(result){
+			for(var i = 0 ; i < result.length ; i++){
+				result[i].comment.updatedAt = format_date(result[i].comment.createdAt);
+				result[i].comment.updatedAt = format_date(result[i].comment.createdAt);
+			}
+			res.json({comment:result});
+			res.end();
+		},
+		error:function(error){
+			res.json({error:error});
+			res.end();
+		}
+	})
 });
 
 router.get('/commentLike',function(req,res,next){
 	var commentId = req.query.commentId;
-	var user = new req.AV.user;
-	var commentLike = new CommentLike();
+	var user = req.AV.user;
 	var comment = new Comment();
 	comment.id = commentId;
-	commentLike.set("commentId",comment);
-	commentLike.set("userId",user);
-	commentLike.save(null,{
-		success:function(commentlike){
-			res.json({msg:"success"});
-			res.end();
+	var query = new AV.Query(CommentLike);
+	query.equalTo("commentId",comment);
+	query.equalTo("userId",user);
+	query.find({
+		success:function(data){
+			if(data.length<=0){
+				var commentLike = new CommentLike();
+				commentLike.set("commentId",comment);
+				commentLike.set("userId",user);
+				commentLike.save(null,{
+					success:function(commentlike){
+						res.json({msg:"success"});
+						res.end();
+					},
+					error:function(object,error){
+						res.json({msg:"error"});
+						res.end();
+					}
+				});
+			}else{
+				data[0].destroy({
+					success:function(object){
+						res.json({msg:"success"});
+						res.end();
+					},
+					error:function(object,error){
+						res.json({msg:"error"});
+						res.end();
+					}
+				})
+			}
 		},
-		error:function(object,error){
+		error:function(data,error){
 			res.json({msg:"error"});
 			res.end();
 		}
-	});
+	})
+	
 });
 
 router.get('/getReport',function(req,res,next){
@@ -271,11 +318,11 @@ router.get('/getReport',function(req,res,next){
 
 });
 
-router.get("/report",function(req,res,next){
-	var competitionId = req.query.competitionId;
-	var content = req.query.content;
-	var author = req.query.author;
-	var title = req.query.title;
+router.post("/report",function(req,res,next){
+	var competitionId = req.body.competitionId;
+	var content = req.body.content;
+	var author = req.body.author;
+	var title = req.body.title;
 	var report = new Report();
 	report.set("title",title);
 	report.set("author",author);
@@ -337,9 +384,9 @@ router.get("/getStatistics",function(req,res,next){
 	});
 });
 
-router.get("/statistics",function(req,res,next){
-	var competitionId = req.query.competitionId;
-	var statistics = req.query.statistics;
+router.post("/statistics",function(req,res,next){
+	var competitionId = req.body.competitionId;
+	var statistics = req.body.statistics;
 	var query = new AV.Query(Competition);
 	query.equalTo("objectId",competitionId);
 	query.find({

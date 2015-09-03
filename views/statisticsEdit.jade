@@ -104,11 +104,12 @@ html
 					}
 				}
 				json.playerB = playerBArr;
-				var url = "/statistics?competitionId=#{competitionId}&statistics="+JSON.stringify(json);
+				var url = "/statistics";
 				$.ajax({
-						type:"GET",
+						type:"POST",
 						url:url,
 						dataType:"json",
+						data:{competitionId:"#{competitionId}",statistics:JOSN.stringify(json)},
 						success:function(data){
 							if(data.msg=="ok"){
 								alert("插入成功");

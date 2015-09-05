@@ -261,7 +261,7 @@ exports.TeamFollow = function(req,res){
 								break;
 							case 1:
 								var likesA = competition.get('likesA');
-								if(likesA<0 && ((likesA+addA-1)<0)){
+								if(likesA<0 || ((likesA+addA-1)<0)){
 									competition.set('likesA',0);
 									break;
 								}
@@ -269,7 +269,7 @@ exports.TeamFollow = function(req,res){
 								break;
 							case 2:
 								var likesB = competition.get('likesB');
-								if(likesB<0 && ((likesB+addB-1)<0)){
+								if(likesB<0 || ((likesB+addB-1)<0)){
 									competition.set('likesA',0);
 									break;
 								}
@@ -307,4 +307,13 @@ exports.TeamFollow = function(req,res){
 	})
 	
 
+}
+
+
+exports.CompetitionShareHandle = function(req,res){
+	var _user = req.user;
+	var _competitionId = req.params.competitionId;
+	var  competition = new Competition();
+	competition.id = _competitionId;
+	
 }

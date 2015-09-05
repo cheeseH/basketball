@@ -267,3 +267,47 @@ exports.GameAfterUpdate = function(req){
 		}
 	});
 }
+
+exports.GameFollowBeforeSave = function(request,response){
+	var follow = request.object;
+	var gameId = follow.get("gameId");
+	var userId = follow.get("userId");
+	var query = new AV.Query('GameFollow');
+	query.equalTo('gameId',gameId);
+	query.equalTo('userId',userId);
+	query.find({
+		success:function(follows){
+			if(follows.length == 0){
+				return response.success();
+			}
+			else{
+				return response.error("The Commentfollow already exists");
+			}
+		},
+		error:function(error){
+			return response.error(error);
+		}
+	})
+}
+
+exports.GameFollowBeforeDelete = function(request,response){
+	var like = request.object;
+	var gameId = like.get("gameId");
+	var userId = like.get("userId");
+	var query = new AV.Query('GameFollow');
+	query.equalTo('gameId',gameId);
+	query.equalTo('userId',userId);
+	query.find({
+		success:function(likes){
+			if(likes.length == 0){
+				return response.error("Not such a GameFollow exists");
+			}
+			else{
+				return response.success();
+			}
+		},
+		error:function(error){
+			return response.error(error);
+		}
+	})
+}

@@ -321,44 +321,37 @@ html
 			};
 
 			function initialize(){
-				$(".left img").attr("src","images/icon-comments-active@2x.png");
-				$(".left span").css("color","#CB1A48");
+				$(".left img").attr("src","images/btn-comment-active@2x.png");
 				getComment();
 			}
 
 			function choose(i){
 				switch(navbar){
 					case 1:
-						$(".left img").attr("src","images/icon-comments@2x.png");
-						$(".left span").css("color","#929292");
+						$(".left img").attr("src","images/btn-comment@2x.png");
 						break;
 					case 2:
-						$(".center img").attr("src","images/icon-report@2x.png");
-						$(".center span").css("color","#929292");
+						$(".center img").attr("src","images/btn-report@2x.png.png");
 						break;
 					case 3:
-						$(".right img").attr("src","images/icon-statistics@2x.png");
-						$(".right span").css("color","#929292");
+						$(".right img").attr("src","btn-statics@2x.png");
 						break;
 				}
 				navbar = i;
 				switch(i){
 					case 1:
 						isComment=true;
-						$(".left img").attr("src","images/icon-comments-active@2x.png");
-						$(".left span").css("color","#CB1A48");
+						$(".left img").attr("src","images/btn-comment-active@2x.png");
 						getComment();
 						break;
 					case 2:
 						isComment=false;
-						$(".center img").attr("src","images/icon-report-active@2x.png");
-						$(".center span").css("color","#CB1A48");
+						$(".center img").attr("src","images/btn-report-active@2x.png");
 						getReport();
 						break;
 					case 3:
 						isComment=false;
-						$(".right img").attr("src","images/icon-statistics-active@2x.png");
-						$(".right span").css("color","#CB1A48");
+						$(".right img").attr("src","images/btn-statics-active@2x.png");
 						getStatistics();
 						break;
 				}
@@ -616,16 +609,13 @@ html
 		div.navbar
 			div.btn.left
 				button(onclick="return choose(1)")
-					img(src="images/icon-comments@2x.png", alt="")
-					span 吐槽
+					img(src="images/btn-comment@2x.png", alt="")
 			div.btn.center
 				button(onclick="return choose(2)")
-					img(src="images/icon-report@2x.png", alt="")
-					span 战报
+					img(src="images/btn-report@2x.png", alt="")
 			div.btn.right
 				button(onclick="return choose(3)")
-					img(src="images/icon-statistics@2x.png", alt="")
-					span 统计
+					img(src="images/btn-statics@2x.png", alt="")
 		div.content(onscroll="scrollBottom(this)")
 			div.container
 	script(type="text/javascript").

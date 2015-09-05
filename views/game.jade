@@ -1,0 +1,194 @@
+doctype html
+html
+	head
+		title 赛事
+		meta(charset="UTF-8")
+		meta(name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no")
+		script(src="/javascripts/jquery.min.js")
+		link(rel="stylesheet" href="/stylesheets/game.css")
+		script(type="text/javascript").
+			var gameId = "#{game.id}";
+			var team;
+			var race;
+			var report;
+			var navbar;
+			function initialize(){
+				$(".navbar .left img").attr("src","images/btn-team-active@2x.png");
+				//- getTeam();
+			};
+			//- function choose(i){
+			//- 	if(i!=navbar){
+			//- 		switch(navbar){
+			//- 			case 1:
+			//- 				$(".navbar .left img").attr("src","images/btn-team@2x.png");
+			//- 				break;
+			//- 			case 2:
+			//- 				$(".schedule-logo img").attr("src","images/btn-race@2x.png");
+			//- 				break;
+			//- 			case 3:
+			//- 				$(".navbar .right img").attr("src","images/btn-report@2x.png");
+			//- 				break;
+			//- 		}
+			//- 	}
+			//- 	navbar = i;
+			//- 	switch(i){
+			//- 		case 1:
+			//- 			$(".navbar .left img").attr("src","images/btn-team-active@2x.png");
+			//- 			getTeam();
+			//- 			break;
+			//- 		case 2:
+			//- 			$(".schedule-logo img").attr("src","images/btn-race-active@2x.png");
+			//- 			getRace();
+			//- 			break;
+			//- 		case 3:
+			//- 			$(".navbar .right img").attr("src","images/btn-report-active@2x.png");
+			//- 			getReport();
+			//- 			break;
+			//- 	}
+			//- };
+			//- function getTeam(){
+			//- 	var url = "/getTeam?gameId="+gameId;
+			//- 	$.ajax({
+			//- 			type:"GET",
+			//- 			url:url,
+			//- 			dataType:"json",
+			//- 			success:function(data){
+
+			//- 			}
+			//- 		});
+			//- };
+			//- function getRace(){
+			//- 	var url = "/getRace?gameId="+gameId;
+			//- 	$.ajax({
+			//- 			type:"GET",
+			//- 			url : url,
+			//- 			dataType:"json",
+			//- 			success:function(data){
+
+			//- 			}
+			//- 		});
+			//- }
+			//- function getReport(){
+			//- 	var url = "/getReport?gameId="+gameId;
+			//- 	$.ajax({
+			//- 			type:"GET",
+			//- 			url:url,
+			//- 			dataType:"json",
+			//- 			success:function(data){
+
+			//- 			}
+			//- 		})
+			//- }
+	body(onload="initialize()")
+		div.brand(style="background-image:url(#{game.get("coverUrl")})")
+			div.horizontal-center
+				p.title #{game.get("name")}
+				p.college #{game.get("college")}
+				div.line-border
+			div.info.horizontal-center
+				div.school.left
+					img.school-img(src="images/icon-location@2x.png")
+					p.school-name #{game.get("campusId").get("name")}
+				div.award.horizontal-center
+					p.award-number.left ￥ #{game.get("award")}
+					img.award-question.right(src="images/icon-question@2x.png")
+				div.follow.right.horizontal-center
+					p.follow-text 关注
+		div.navbar.horizontal-center
+			div.left.navbar-button
+					img.left(src="images/btn-team@2x.png", alt="")
+			div.navbar-button.schedule-logo
+					img.left(src="images/btn-race@2x.png", alt="")
+			div.right.navbar-button
+					img.left(src="images/btn-report@2x.png", alt="")
+		div.content
+			//- div.team.empty.horizontal-center
+				img(src="images/empty-team@2x.png")
+			//- div.team
+				div.card
+					p.team-order.left 1
+					img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+					p.team-name.left 11级A班
+				div.card(style="background-color:#F0F0F0")
+						p.team-order.left 2
+						img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+						p.team-name.left 11级A班
+				div.card
+						p.team-order.left 3
+						img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+						p.team-name.left 11级A班
+				div.card(style="background-color:#F0F0F0")
+						p.team-order.left 4
+						img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+						p.team-name.left 11级A班
+				div.card
+						p.team-order.left 5
+						img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+						p.team-name.left 11级A班
+				div.card(style="background-color:#F0F0F0")
+						p.team-order.left 6
+						img.team-img.left(src="https://upload.wikimedia.org/wikipedia/zh/9/9a/Charlotte-Hornets_new_logo.png")
+						p.team-name.left 11级A班
+			//- div.race.empty.horizontal-center
+				img(src="images/empty-race@2x.png")
+			//- div.race
+				div.type
+					img.left.type-img(src="images/tabbar-game-icon@2x.png")
+					p.type-name 总决赛
+				div.card
+					div.team.left.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						p.team-name 11级A班
+					div.info.horizontal-center
+						p.title 金秋杯
+						div.score
+							p.scoreA 127
+							p.scoreB 133
+						p.status 进行中
+					div.team.right.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						p.team-name 11级B班
+				div.line-border
+				div.card
+					div.team.left.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						div.team-win.horizontal-center
+							p.win-text win
+						p.team-name.up-offset 11级A班
+					div.info.horizontal-center
+						p.title 金秋杯
+						div.score
+							p.scoreA 127
+							p.scoreB 133
+						p.status 进行中
+					div.team.right.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						p.team-name 11级B班
+				div.line-border
+				div.card
+					div.team.left.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						p.team-name 11级A班
+					div.info.horizontal-center
+						p.title 金秋杯
+						div.score
+							p.scoreA 127
+							p.scoreB 133
+						p.status 进行中
+					div.team.right.horizontal-center
+						img.race-img(src="https://upload.wikimedia.org/wikipedia/zh/thumb/e/e4/HoustonRockets.png/200px-HoustonRockets.png")
+						p.team-name 11级B班
+				div.line-border
+			//- div.report.empty.horizontal-center
+				img(src="images/empty-report@2x.png")
+			//- div.report
+				div.card
+					img.report-img.left(src="")
+					div.report-content
+						p.report-title 思东最后三秒神奇绝杀,11级A班夺得总冠军
+						div.report-info
+							img.time-img.left(src="images/icon-clock@2x.png")
+							p.time-text.left 2小时前
+							img.author-img.left(src="images/icon-author@2x.png")
+							p.author-text.left 中东篮协
+				div.line-border

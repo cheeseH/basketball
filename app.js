@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var jiang = require('./routes/jiang');
+var game = require('./routes/game');
 var cloud = require('./cloud');
 var AV = require('leanengine');
 var app = express();
@@ -26,6 +27,7 @@ app.use(AV.Cloud.CookieSession({ secret: 'basketball-cheeseH', maxAge: 3600000, 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/',jiang);
+app.use('/',game);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

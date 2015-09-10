@@ -55,9 +55,12 @@ html
 			var state = "{live@competitionId~"+competitionId+"}";
 			state = encodeURIComponent(state);
 			var authorizeUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8fb97e6277001984&redirect_uri=http://basketball.avosapps.com/authorize&response_type=code&scope=snsapi_userinfo&state="+state+"#wechat_redirect";
+			var isLoad = false;
 
 			function getComment(){
+				isLoad = true;
 				$(".edit").remove();
+				$("iframe").remove();
 				$(".content .container").empty();
 				var url = "/getComment?competitionId="+competitionId;
 				$.ajax({
@@ -69,9 +72,9 @@ html
 							var hotComments = data.comment.hot;
 							var newComments = data.comment.recent;
 							var hasComment = false;
-							$(".content").attr("style","background-color:#FFFFFF;");
+							$(".content").css("background-color","#FFFFFF");
 							if(comment_number==0){
-								$(".content").attr("style","background-color:#F0F0F0;");
+								$(".content").css("background-color","#F0F0F0");
 								$(".content .container").append("<div class=empty style=background-image:url('images/empty-comment@2x.png')></div>");
 							}else if(comment_number>=1000){
 								$(".content .container").append("<div class='blank'></div>");
@@ -147,17 +150,20 @@ html
 								}
 							}
 							$("body").append("<div class=edit><input type=text data-at='' data-at-name='' onblur='lost()'><a onclick='return send()' href='#'>发送</a></div>");
+							isLoad = false;
 						}
 					});
 			}
 
 			var report="";
 			function getReport(){
+				isLoad = true;
 				$(".edit").remove();
+				$("iframe").remove();
 				$(".content .container").empty();
 				if(report!=""){
-					var content = report.content;
-					$(".content .container").append(content);
+					$(".content").append(report);
+					isLoad = false;
 					return;
 				}
 				var url = "/getReport?competitionId="+competitionId;
@@ -167,24 +173,29 @@ html
 						dataType:"json",
 						success:function(data){
 							var number = data.number;
-							$(".content").attr("style","background-color:#FFFFFF;");
+							$(".content").css("background-color","#FFFFFF");
 							if(number == 0){
-								$(".content").attr("style","background-color:#F0F0F0;");
+								$(".content").css("background-color","#F0F0F0");
 								$(".content .container").append("<div class=empty style=background-image:url('images/empty-report@2x.png')></div>");
+								$(".content").css("overflow-y","scroll");
 							}else{
-								report = data.report;
-								var content = "<iframe srcdoc="+report.content+"></iframe>"
-								$(".content .container").append(content);
+								var content = "<iframe width=100% height=100% srcdoc='"+data.report.content+"'></iframe>";
+								report = content;
+								$(".content").append(content);
 							}
+							isLoad = false;
 						}
 					});
 			}
 			var statisticsHTML ="";
 			function getStatistics(){
+				isLoad = true;
 				$(".edit").remove();
+				$("iframe").remove();
 				$(".content .container").empty();
 				if(statisticsHTML!=""){
 					$(".content .container").append(statisticsHTML);
+					isLoad = false;
 					return;
 				}
 				var url = "/getStatistics?competitionId="+competitionId;
@@ -194,7 +205,7 @@ html
 						dataType:"json",
 						success:function(data){
 							var number = data.number;
-							$(".content").attr("style","background-color:#F0F0F0;");
+							$(".content").css("background-color","#F0F0F0");
 							if(number==0){
 								$(".content .container").append("<div class=empty style=background-image:url('images/empty-statistics@2x.png')></div>");
 							}else{
@@ -236,6 +247,7 @@ html
 								ids = new Array();
 								statisticsHTML = $(".content .container").html();
 							}
+							isLoad = false;
 						}
 					})
 			}
@@ -317,19 +329,22 @@ html
 
 			function initialize(){
 				$(".left img").attr("src","images/btn-comment-active@2x.png");
-				getComment();
+				choose(1);
 			}
 
 			function choose(i){
+				if(isLoad){
+					return false;
+				}
 				switch(navbar){
 					case 1:
 						$(".left img").attr("src","images/btn-comment@2x.png");
 						break;
 					case 2:
-						$(".center img").attr("src","images/btn-report@2x.png.png");
+						$(".center img").attr("src","images/btn-report@2x.png");
 						break;
 					case 3:
-						$(".right img").attr("src","btn-statics@2x.png");
+						$(".right img").attr("src","images/btn-statistics@2x.png");
 						break;
 				}
 				navbar = i;
@@ -337,16 +352,19 @@ html
 					case 1:
 						isComment=true;
 						$(".left img").attr("src","images/btn-comment-active@2x.png");
+						$(".content").css("overflow-y","scroll");
 						getComment();
 						break;
 					case 2:
 						isComment=false;
 						$(".center img").attr("src","images/btn-report-active@2x.png");
+						$(".content").css("overflow-y","hidden");
 						getReport();
 						break;
 					case 3:
 						isComment=false;
-						$(".right img").attr("src","images/btn-statics-active@2x.png");
+						$(".right img").attr("src","images/btn-statistics-active@2x.png");
+						$(".content").css("overflow-y","scroll");
 						getStatistics();
 						break;
 				}
@@ -610,7 +628,7 @@ html
 					img(src="images/btn-report@2x.png", alt="")
 			div.btn.right
 				button(onclick="return choose(3)")
-					img(src="images/btn-statics@2x.png", alt="")
+					img(src="images/btn-statistics@2x.png", alt="")
 		div.content(onscroll="scrollBottom(this)")
 			div.container
 	script(type="text/javascript").

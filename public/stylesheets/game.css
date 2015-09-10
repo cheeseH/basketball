@@ -129,9 +129,6 @@ body{
 	display: inline-block;
 }
 .navbar-button img{
-	display: inline-block;
-	margin-left: 70px;
-	margin-right: 20px;
 	padding-top: 22px;
 	padding-bottom: 22px;
 }
@@ -181,6 +178,12 @@ body{
 	margin-left: 30px;
 	margin-top: 20px;
 }
+.team .team-name{
+	font-size: 24px;
+	color: #535353;
+	margin-left: 10px;
+	line-height: 100px
+}
 .empty{
 	background-color: #F0F0F0;
 	line-height: 250px;
@@ -192,11 +195,11 @@ body{
 .race{
 	width: 100%;
 	height: 100%;
-	background-color: #F0F0F0;
 }
 .race .type{
 	width: 100%;
 	height: 70px;
+	background-color: #F0F0F0;
 }
 .race .type-img{
 	display: inline-block;
@@ -274,7 +277,7 @@ body{
 	border-radius: 50%;
 	margin-top: 40px;
 }
-.race .team-name{
+.race .race-name{
 	font-size: 26px;
 	color: #404040;
 	margin-top: 10px;

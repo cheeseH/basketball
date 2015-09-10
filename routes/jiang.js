@@ -323,10 +323,12 @@ router.post("/report",function(req,res,next){
 	var content = req.body.content;
 	var author = req.body.author;
 	var title = req.body.title;
+	var coverUrl = req.body.coverUrl;
 	var report = new Report();
 	report.set("title",title);
 	report.set("author",author);
 	report.set("content",content);
+	report.set("coverUrl",coverUrl);
 	report.save(null,{
 		success:function(data){
 			var query = new AV.Query(Competition);

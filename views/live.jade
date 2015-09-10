@@ -454,6 +454,7 @@ html
 			var isReady =true;
 			function scrollBottom(obj){
 				if(isReady&&isComment&&isScrollBottom(obj)){
+					isLoad = true;
 					isReady=false;
 					var url = "/getOldComment?competitionId="+competitionId+"&oldTime="+oldTime;
 					$.ajax({
@@ -493,6 +494,7 @@ html
 									}
 								}
 								isReady=true;
+								isLoad = false;
 							}
 						});
 				}
